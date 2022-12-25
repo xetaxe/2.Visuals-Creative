@@ -69,7 +69,7 @@ a {
   transform: translateX(60px);
   opacity: 0;
   -webkit-transition: all .25s cubic-bezier(.14, .59, 1, 1.01);
-  transition: all .15s cubic-bezier(.14, .59, 1, 1.01);
+  transition: all .5s cubic-bezier(.14, .59, 1, 1.01);
   margin: 0;
   padding: 0 5px;
 }
@@ -98,7 +98,7 @@ a#button-1:hover img {
   width: 100%;
   height: 100%;
   left: -200px;
-  background: #BFC0C0;
+  background: #bfbfc0;
   position: absolute;
   transition: all .35s ease-Out;
   bottom: 0;

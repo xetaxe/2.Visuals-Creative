@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+	<link rel="stylesheet" href="main.css">
+	<script src="https://code.jquery.com/jquery-3.6.3.min.js" defer></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/series-label.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+	<script type="module" src="main.js" defer></script>
+</head>
+<body>
+
+	<figure class="highcharts-figure">
+		<div id="container"></div>
+	</figure>
+
+	<div class="selectors">
+
+		<div class="selector_container">
+			<label for="timeframe">Day/Month:</label>
+			<select name="timeframe" id="timeframe">
+				<option value="month">Month</option>
+				<option value="day">Day</option>
+			</select>
+				
+			<label for="day"></label>
+			<input type="date" id="day" name="day">
+		
+			<label for="month"></label>
+			<input type="month" id="month" name="month">
+		</div>
+	
+		<div class="selector_container">
+			<label for="sort_by">Sort by:</label>
+			<select name="sort_by" id="sort_by">
+				<option value="game">Game</option>
+				<option value="hours_watched">Hours watched</option>
+				<option value="unique_channels">Unique channels</option>
+				<option value="average_viewers">Average viewers</option>
+				<option value="average_channels">Average channels</option>
+				<option value="peak_viewers">Peak viewers</option>
+				<option value="peak_channels">Peak channels</option>
+				<option value="airtime_hours">Airtime hours</option>
+				<option value="average_channels">Average channels</option>
+			</select>
+		</div>
+	
+		<div class="selector_container">
+			<label for="order">Order:</label>
+			<select name="order" id="order">
+				<option value="asc">Ascending</option>
+				<option value="desc">Descending</option>
+			</select>
+		</div>
+	
+		<div class="selector_container">
+			<label for="limit">Num. games shown (0-100):</label>
+			<input type="number" id="limit" name="limit" min="0" max="100"><br><br>
+		</div>
+
+	</div>
+
+
+
+
+</body>
+</html>

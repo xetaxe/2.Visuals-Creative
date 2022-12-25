@@ -2,12 +2,16 @@
 "use strict";
 
 import {Car} from "./counter.js";
+import chartParams from "./chartParams.js";
 
-let myCar = new Car("Seat", "Guido");
+$(document).ready( function() {
 
-document.getElementById("but")?.addEventListener("click", changeText);
+	const myCar = new Car("Seat", "Jaume");
 
-function changeText() {
-	const test = document.getElementById("test");
-	test != null ? test.innerHTML += myCar.properties : console.log("Bad code!");
-}
+	$("#but")?.on("click", () =>	$("#test")?.append(JSON.stringify(myCar)));
+
+	const Highcharts = window["Highcharts"];
+
+	Highcharts.chart('container', chartParams);
+
+});
