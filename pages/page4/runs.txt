@@ -1,0 +1,1 @@
+npx tailwindcss -i ./pages/page4/input.css -o ./pages/page4/output.css --watch
