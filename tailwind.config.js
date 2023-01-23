@@ -3,7 +3,7 @@ module.exports = {
   content: ["./pages/page4/*.{html, js}"],
   theme: {
     // screens: {
-      // 'sm': '576px', // => @media (min-width: 576px) { ... }
+      // 'sm': '576px', // => @media (min-width: 576px) { ... } 590 900 1160
       // 'md': '960px', // => @media (min-width: 960px) { ... }
       // 'lg': '1440px', // => @media (min-width: 1440px) { ... }
     // },
