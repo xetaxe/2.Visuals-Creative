@@ -5,6 +5,8 @@ const gravity = 2;
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+console.log(canvas.width, canvas.height);
+
 addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
@@ -37,11 +39,26 @@ class Player {
 }
 
 const player = new Player();
+const keys = {
+    right: {
+        pressed: false
+    },
+    left: {
+        pressed: false
+    }
+}
 
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
+
+    if (keys.right.pressed)
+        player.vx = 5
+    else if (keys.left.pressed)
+        player.vx = -5
+    else
+        player.vx = 0
 }
 
 animate();
@@ -49,13 +66,13 @@ animate();
 addEventListener('keydown', ({key}) => {
     switch (key) {
         case "a":
-            player.vx = -5;
+            keys.left.pressed = true
             break
         case "w":
             player.vy = -28;
             break
         case "d":
-            player.vx = 5;
+            keys.right.pressed = true
             break
     }
 
@@ -64,10 +81,10 @@ addEventListener('keydown', ({key}) => {
 addEventListener('keyup', ({key}) => {
     switch (key) {
         case "a":
-            player.vx = 0;
+            keys.left.pressed = false
             break
         case "d":
-            player.vx = 0;
+            keys.right.pressed = false
             break
     } 
 })
