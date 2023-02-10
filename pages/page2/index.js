@@ -1,7 +1,7 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 const gravity = 2;
-const MAX_VY = 40;
+const MAX_VY = 30;
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -27,12 +27,15 @@ addEventListener("resize", () => {
 
 class Player {
     constructor() {
-        this.x = 100,
-        this.y = 300,
-        this.vx = 0,
-        this.vy = 1,
-        this.width = 100
-        this.height = 100
+        this.x = 100;
+        this.y = 300;
+        this.abs_x = 100;
+        this.abs_y = 300;
+        this.vx = 0;
+        this.vy = 0;
+        this.width = 50;
+        this.height = 100;
+        this.falling = true;
     }
 
     draw() {
@@ -42,13 +45,16 @@ class Player {
     }
 
     update() {
-        this.draw();
         this.y += this.vy;
         this.x += this.vx;
-        if (this.y + this.height + this.vy <= B_LIMIT && this.vy <= MAX_VY)
+        if (this.vy <= MAX_VY)
             this.vy += gravity;
         else
             this.vy += 0;
+        
+        console.log(this.y, this.vy, this.falling, T_MARGIN, B_MARGIN);
+            // this.y + this.height + this.vy <= B_LIMIT && 
+        this.draw();
     }
 }
 
@@ -104,13 +110,9 @@ function animate() {
     else if (keys.left.pressed && player.x > L_MARGIN)
         player.vx = -5
     else
-        player.vx = 0
-    
-    
-    console.log(player.y, player.vy, T_MARGIN, B_MARGIN);
-    
+        player.vx = 0;
 
-    
+
     if (keys.right.pressed && player.x >= R_MARGIN)
         platforms.forEach( platform => platform.vx = -5)
     else if (keys.left.pressed && player.x <= L_MARGIN)
@@ -118,41 +120,47 @@ function animate() {
     else
         platforms.forEach( platform => platform.vx = 0)
     
-    if (player.y + player.vy <= T_MARGIN)
+    if (player.y + player.vy < T_MARGIN)
         platforms.forEach( platform => platform.vy = -player.vy)
-    else if (player.y + player.vy >= B_MARGIN)
+    else if (player.y + player.vy + player.height > B_MARGIN)
         platforms.forEach( platform => platform.vy = -player.vy)
     else
         platforms.forEach( platform => platform.vy = 0)
 
     platforms.forEach( platform => {
         if (player.y + player.height <= platform.y && player.y + player.height + player.vy >= platform.y 
-            && player.x > (platform.x - player.width) && player.x < platform.x + platform.width)
-            player.vy = 0
+            && player.x > (platform.x - player.width) && player.x < platform.x + platform.width) {
+                player.vy = 0;
+                player.falling = false;
+            }
     })
 
     if (player.y + player.vy < T_MARGIN)
         player.y -= player.vy
-    else if (player.y + player.vy > B_MARGIN)
+        // player.vy = 0;
+    else if (player.y + player.vy + player.height > B_MARGIN)
         player.y -= player.vy
+        // player.vy = 0;
 
     platforms.forEach( platform => platform.update());
     player.update();
-    }
+}
     
     animate();
     
-    addEventListener('keydown', ({key}) => {
-        switch (key.toLowerCase()) {
-            case "a":
-                keys.left.pressed = true
-                break
-        case "w":
+addEventListener('keydown', ({key}) => {
+    switch (key.toLowerCase()) {
+        case "a":
+            keys.left.pressed = true
+            break
+    case "w":
+        // if (!player.falling)
             player.vy = -28;
-            break
-        case "d":
-            keys.right.pressed = true
-            break
+            // player.falling = true;
+        break
+    case "d":
+        keys.right.pressed = true
+        break
     }
 
 })
