@@ -3,6 +3,10 @@ const c = canvas.getContext('2d');
 const gravity = 2;
 const MAX_VY = 30;
 
+const platform_grass = document.getElementById("platform_grass");
+const background = document.getElementById("background");
+const cloud = document.getElementById("cloud");
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
@@ -47,30 +51,56 @@ class Player {
     update() {
         this.y += this.vy;
         this.x += this.vx;
-        if (this.vy <= MAX_VY)
+        if (this.falling && this.vy < MAX_VY){
             this.vy += gravity;
-        else
-            this.vy += 0;
-        
-        console.log(this.y, this.vy, this.falling, T_MARGIN, B_MARGIN);
-            // this.y + this.height + this.vy <= B_LIMIT && 
+            console.log("update");
+        }
+        // else
+        //     this.vy += 0;
+ 
         this.draw();
     }
 }
 
 class Platform {
-    constructor(x, y, w, h){
+    constructor(x, y, w, h, image){
         this.x = x;
         this.y = y;
         this.vx = 0,
         this.vy = 0,
         this.width = w;
         this.height = h;
+        this.image = image;
     }
 
     draw() {
         c.fillStyle = "blue";
-        c.fillRect(this.x, this.y,
+        c.drawImage(this.image, this.x, this.y - 8,
+            this.width, this.height)
+    }
+
+    update() {
+        this.draw();
+        this.y += this.vy;
+        this.x += this.vx;
+    }
+
+}
+
+class Cloud {
+    constructor(x, y, w, h, image){
+        this.x = x;
+        this.y = y;
+        this.vx = 0,
+        this.vy = 0,
+        this.width = w;
+        this.height = h;
+        this.image = image;
+    }
+
+    draw() {
+        c.fillStyle = "blue";
+        c.drawImage(this.image, this.x, this.y,
             this.width, this.height)
     }
 
@@ -84,14 +114,17 @@ class Platform {
 
 const player = new Player();
 const platforms = [];
+const clouds = [];
 for(let i=0; i<200; i++){
     let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
     let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
     let w = Math.floor(Math.random() * (600 - 100) + 100);
     // let h = Math.floor(Math.random() * (40 - 5) + 5);
-    platforms.push(new Platform(x, y, w, 20))
+    platforms.push(new Platform(x, y, w, 40, platform_grass))
+    if (i % 5 === 0)
+        clouds.push(new Cloud(-x, -y, w, 0.75*w, cloud))
 }
-const platform = new Platform();
+
 const keys = {
     right: {
         pressed: false
@@ -103,7 +136,9 @@ const keys = {
 
 function animate() {
     requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+    player.falling = true;
     
     if (keys.right.pressed && player.x < R_MARGIN)
         player.vx = 5
@@ -113,54 +148,70 @@ function animate() {
         player.vx = 0;
 
 
-    if (keys.right.pressed && player.x >= R_MARGIN)
-        platforms.forEach( platform => platform.vx = -5)
-    else if (keys.left.pressed && player.x <= L_MARGIN)
-        platforms.forEach( platform => platform.vx = 5)
-    else
-        platforms.forEach( platform => platform.vx = 0)
-    
-    if (player.y + player.vy < T_MARGIN)
-        platforms.forEach( platform => platform.vy = -player.vy)
-    else if (player.y + player.vy + player.height > B_MARGIN)
-        platforms.forEach( platform => platform.vy = -player.vy)
-    else
-        platforms.forEach( platform => platform.vy = 0)
+    if (keys.right.pressed && player.x >= R_MARGIN){
+        platforms.forEach( platform => platform.vx = -5);
+        clouds.forEach( cloud => cloud.vx = -1);
+    }
+    else if (keys.left.pressed && player.x <= L_MARGIN){
+        platforms.forEach( platform => platform.vx = 5);
+        clouds.forEach( cloud => cloud.vx = 1);
+    }
+    else {
+        platforms.forEach( platform => platform.vx = 0);
+        clouds.forEach( cloud => cloud.vx = -0.1);
+    }
 
     platforms.forEach( platform => {
-        if (player.y + player.height <= platform.y && player.y + player.height + player.vy >= platform.y 
-            && player.x > (platform.x - player.width) && player.x < platform.x + platform.width) {
+        if (player.y + player.height <= platform.y && player.y + player.height + player.vy >= platform.y
+            && player.x > (platform.x - player.width) && player.x < (platform.x + platform.width)) {
+                console.log(player.y + player.height, player.y + player.height + player.vy, platform.y);
+                player.y = platform.y - player.height;
                 player.vy = 0;
                 player.falling = false;
             }
     })
 
-    if (player.y + player.vy < T_MARGIN)
+    if (player.y + player.vy <= T_MARGIN){
+        platforms.forEach( platform => platform.vy = -player.vy)
+        clouds.forEach( cloud => cloud.vy = -(player.vy / 10))
         player.y -= player.vy
-        // player.vy = 0;
-    else if (player.y + player.vy + player.height > B_MARGIN)
+    }
+    else if (player.y + player.vy + player.height >= B_MARGIN){
+        platforms.forEach( platform => platform.vy = -player.vy)
+        clouds.forEach( cloud => cloud.vy = -(player.vy / 10))
         player.y -= player.vy
-        // player.vy = 0;
+    }
+    else{
+        platforms.forEach( platform => platform.vy = 0);
+        clouds.forEach( cloud => cloud.vy = 0);
+    }
 
+    if (player.y < T_MARGIN) 
+        player.y = T_MARGIN;
+    else if ( player.y + player.height > B_MARGIN)
+        player.y = B_MARGIN - player.height;
+
+    clouds.forEach( cloud => cloud.update());
     platforms.forEach( platform => platform.update());
+    console.log(player.y, player.vy, player.falling, T_MARGIN, B_MARGIN);
     player.update();
 }
     
-    animate();
+animate();
     
 addEventListener('keydown', ({key}) => {
     switch (key.toLowerCase()) {
         case "a":
             keys.left.pressed = true
             break
-    case "w":
+        case "w":
         // if (!player.falling)
             player.vy = -28;
-            // player.falling = true;
-        break
-    case "d":
+            player.falling = true;
+            break
+        case "d":
         keys.right.pressed = true
-        break
+            break
     }
 
 })
