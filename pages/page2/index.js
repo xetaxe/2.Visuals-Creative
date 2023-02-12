@@ -6,6 +6,7 @@ const MAX_VY = 30;
 const platform_grass = document.getElementById("platform_grass");
 const background = document.getElementById("background");
 const cloud = document.getElementById("cloud");
+const sprite = document.getElementById("sprite");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -19,8 +20,6 @@ const R_LIMIT = 5000;
 const L_LIMIT = -5000;
 const T_LIMIT = -3000;
 const B_LIMIT = 1000;
-
-console.log(canvas.width, canvas.height);
 
 addEventListener("resize", () => {
     canvas.width = innerWidth;
@@ -37,27 +36,34 @@ class Player {
         this.abs_y = 300;
         this.vx = 0;
         this.vy = 0;
-        this.width = 50;
-        this.height = 100;
+        this.width = 60;
+        this.height = 60;
         this.falling = true;
+        this.image = sprite;
+        this.tick = 1;
     }
 
+
+
     draw() {
-        c.fillStyle = "red";
-        c.fillRect(this.x, this.y,
-            this.width, this.height)
+        c.drawImage(this.image, 32 * Math.floor(this.tick), 0, 32, 32, this.x, this.y,
+            this.width, this.height);
     }
 
     update() {
+        this.tick += 0.4;
+        if (!keys.left.pressed && !keys.right.pressed){
+            this.tick -= 0.38;
+            if (this.tick >= 2)
+                this.tick = 0;
+        }
+        if (this.tick >= 8)
+            this.tick = 0;
         this.y += this.vy;
         this.x += this.vx;
         if (this.falling && this.vy < MAX_VY){
             this.vy += gravity;
-            console.log("update");
         }
-        // else
-        //     this.vy += 0;
- 
         this.draw();
     }
 }
@@ -163,8 +169,7 @@ function animate() {
 
     platforms.forEach( platform => {
         if (player.y + player.height <= platform.y && player.y + player.height + player.vy >= platform.y
-            && player.x > (platform.x - player.width) && player.x < (platform.x + platform.width)) {
-                console.log(player.y + player.height, player.y + player.height + player.vy, platform.y);
+            && (player.x - 30) > (platform.x - player.width) && (player.x  + 30) < (platform.x + platform.width)) {
                 player.y = platform.y - player.height;
                 player.vy = 0;
                 player.falling = false;
@@ -193,7 +198,6 @@ function animate() {
 
     clouds.forEach( cloud => cloud.update());
     platforms.forEach( platform => platform.update());
-    console.log(player.y, player.vy, player.falling, T_MARGIN, B_MARGIN);
     player.update();
 }
     
@@ -210,7 +214,7 @@ addEventListener('keydown', ({key}) => {
             player.falling = true;
             break
         case "d":
-        keys.right.pressed = true
+            keys.right.pressed = true
             break
     }
 
