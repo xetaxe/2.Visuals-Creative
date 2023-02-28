@@ -24,3 +24,10 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   console.log(gl.getProgramInfoLog(program));
   gl.deleteProgram(program);
 }
+
+
+
+// Returns a random integer from min to range - 1.
+export function randomInt(range, min) {
+	return Math.floor(Math.random() * range + min);
+}

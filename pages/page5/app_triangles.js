@@ -1,4 +1,5 @@
-import {createShader, createProgram} from "./utils.js";
+import {createShader, createProgram, randomInt} from "./utils.js";
+import { Triangle } from "./triangle.js";
 
 let canvas = document.getElementById("myCanvas");
 
@@ -41,18 +42,7 @@ let type = gl.FLOAT;   // the data is 32bit floats
 let normalize = false; // don't normalize the data
 let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
 let offset = 0;        // start at the beginning of the buffer
-
-
-// three 2d points
-var positions = [
-    10, 20,
-    80, 20,
-    10, 30,
-    10, 30,
-    80, 20,
-    80, 30,
-];
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+let primitiveType = gl.TRIANGLES; // 2d, we set triangles as main n-simplex
 
 
 ////// Up until that point we were dealing with INITIALIZATION CODE
@@ -79,7 +69,34 @@ gl.enableVertexAttribArray(positionAttributeLocation);
 gl.vertexAttribPointer( positionAttributeLocation, size, type, normalize, stride, offset);
 
 //Tell WebGL to execute our GLSL program
-var primitiveType = gl.TRIANGLES;
-// var offset = 0;
-let count = 6;
-gl.drawArrays(primitiveType, offset, count);
+
+
+// draw 50 random triangles in random colors
+let triangles = []
+
+for (var i = 0; i < 50; i++) {
+  let randomColor = [Math.random(), Math.random(), Math.random(), 1];
+  let triangle = new Triangle(randomInt(300, 0), randomInt(300, 0), randomInt(50, 10), randomInt(50, 10), randomColor, randomInt(50, 10), randomInt(50, 10));
+	triangles.push(triangle)
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangle.getPoints()), gl.STATIC_DRAW);
+  gl.uniform4f(colorUniformLocation, ...triangle.getColor());
+
+  // Draw the triangles (first render).
+  gl.drawArrays(primitiveType, 0, triangles.length);
+}
+
+function render(now) {
+
+	triangles = triangles.map(triangle => {
+		triangle.updatePoints();
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangle.getPoints()), gl.STATIC_DRAW);
+		gl.uniform4f(colorUniformLocation, ...triangle.getColor());
+	
+		// Draw the triangles (first render).
+		gl.drawArrays(primitiveType, 0, triangles.length);
+	})
+
+	requestAnimationFrame(render);
+}
+
+render();
