@@ -1,72 +1,85 @@
-@import url('https://fonts.googleapis.com/css?family=Raleway:300,400');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg-main-color: #FFFFFE;
+  --bg-extra-color: #2D3142;
+  --main-color: #0026FF;
+  --extra-color: #FFD900;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: #2D3142;
-  font-family: 'Raleway', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main-color);
+  font-family: 'Roboto', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 
 /* Heading */
 
 h1 {
-  font-size: 1.5em;
+  margin: 0;
+  padding: 50px 20px;
+  font-size: 1.5rem;
+  line-height: 3rem;
   text-align: center;
-  padding: 70px 0 0 0;
-  color: #EF8354;
-  font-weight: 300;
-  letter-spacing: 1px;
+  background-color: var(--bg-extra-color);
+  letter-spacing: 2px;
 }
 
-span {
-  border: 2px solid #4F5D75;
-  padding: 10px;
+.span_accent {
+  margin-right: 10px;
+  padding: 10px 40px;
+  border-radius: 100vh;
+  border: 2px solid var(--extra-color);
 }
 
 
 /* Layout Styling */
 
-#container {
-  width: 100%;
-  margin: 0 auto;
-  padding: 50px 0 150px 0;
+.container {
+  flex-grow: 1;
+  padding: 50px;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 
 /* Button Styles */
 
 .button {
-  display: inline-flex;
-  height: 40px;
-  width: 150px;
-  border: 2px solid #BFC0C0;
-  margin: 20px 20px 20px 20px;
-  color: #BFC0C0;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-size: .8em;
-  letter-spacing: 1.5px;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 40px;
+  background-color: var(--main-color);
+  border-radius: 100vh;
+  color: white;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   overflow: hidden;
+  display: inline-flex;
+  align-items: center;
 }
 
 a {
-  color: #BFC0C0;
   text-decoration: none;
+  color: inherit;
   letter-spacing: 1px;
 }
 
 
 /* First Button */
 
-#arrow-hover {
-  width: 15px;
-  height: 10px;
+.arrow_hover {
   position: absolute;
-  transform: translateX(60px);
   opacity: 0;
   -webkit-transition: all .25s cubic-bezier(.14, .59, 1, 1.01);
   transition: all .5s cubic-bezier(.14, .59, 1, 1.01);
@@ -74,22 +87,29 @@ a {
   padding: 0 5px;
 }
 
-a#button-1:hover img {
-  width: 15px;
+#arrow_hover_1 {
+  transform: translateX(120px);
+}
+
+#arrow_hover_2 {
+  transform: translateX(130px);
+}
+
+a#button_1:hover svg {
   opacity: 1;
-  transform: translateX(50px);
+  transform: translateX(88px);
 }
 
 
 /* Second Button */
 
-#button-2 {
+#button_2 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-2 a {
+#button_2 a {
   position: relative;
   transition: all .35s ease-Out;
 }
@@ -98,30 +118,30 @@ a#button-1:hover img {
   width: 100%;
   height: 100%;
   left: -200px;
-  background: #bfbfc0;
+  background: var(--extra-color);
   position: absolute;
   transition: all .35s ease-Out;
   bottom: 0;
 }
 
-#button-2:hover #slide {
+#button_2:hover #slide {
   left: 0;
 }
 
-#button-2:hover a {
-  color: #2D3142;
+#button_2:hover a {
+  color: black;
 }
 
 
 /* Third Button */
 
-#button-3 {
+#button_3 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-3 a {
+#button_3 a {
   position: relative;
   transition: all .45s ease-Out;
 }
@@ -132,14 +152,14 @@ a#button-1:hover img {
   opacity: 0;
   line-height: 40px;
   border-radius: 50%;
-  background: #BFC0C0;
+  background: var(--extra-color);
   position: absolute;
   transition: all .5s ease-Out;
   top: 20px;
   left: 70px;
 }
 
-#button-3:hover #circle {
+#button_3:hover #circle {
   width: 200%;
   height: 500%;
   opacity: 1;
@@ -147,20 +167,20 @@ a#button-1:hover img {
   left: -70px;
 }
 
-#button-3:hover a {
-  color: #2D3142;
+#button_3:hover a {
+  color: black;
 }
 
 
 /* Fourth Button */
 
-#button-4 {
+#button_4 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-4 a {
+#button_4 a {
   position: relative;
   transition: all .45s ease-Out;
 }
@@ -171,26 +191,26 @@ a#button-1:hover img {
   margin-top: 15px;
   align-self: flex-end;
   left: -200px;
-  background: #BFC0C0;
+  background: var(--extra-color);
   position: absolute;
   transition: all .3s ease-Out;
   bottom: 0;
 }
 
-#button-4:hover #underline {
+#button_4:hover #underline {
   left: 0;
 }
 
 
 /* Fifth Button */
 
-#button-5 {
+#button_5 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-5 a {
+#button_5 a {
   position: relative;
   transition: all .45s ease-Out;
 }
@@ -201,29 +221,29 @@ a#button-1:hover img {
   height: 250%;
   left: -200px;
   top: -30px;
-  background: #BFC0C0;
+  background: var(--extra-color);
   position: absolute;
   transition: all .3s ease-Out;
 }
 
-#button-5:hover #translate {
+#button_5:hover #translate {
   left: 0;
 }
 
-#button-5:hover a {
-  color: #2D3142;
+#button_5:hover a {
+  color: black;
 }
 
 
 /* Sixth Button */
 
-#button-6 {
+#button_6 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-6 a {
+#button_6 a {
   position: relative;
   transition: all .45s ease-Out;
 }
@@ -240,30 +260,30 @@ a#button-1:hover img {
   transition: all .5s ease-Out;
 }
 
-#button-6:hover #spin {
+#button_6:hover #spin {
   width: 200%;
   height: 500%;
   opacity: 1;
   left: -70px;
   top: -70px;
-  background: #BFC0C0;
+  background: var(--extra-color);
   transform: rotate(80deg);
 }
 
-#button-6:hover a {
-  color: #2D3142;
+#button_6:hover a {
+  color: black;
 }
 
 
 /* Seventh Button */
 
-#button-7 {
+#button_7 {
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
-#button-7 a {
+#button_7 a {
   position: relative;
   left: 0;
   transition: all .35s ease-Out;
@@ -272,7 +292,7 @@ a#button-1:hover img {
 #dub-arrow {
   width: 100%;
   height: 100%;
-  background: #BFC0C0;
+  background: var(--extra-color);
   left: -200px;
   position: absolute;
   padding: 0;
@@ -283,25 +303,16 @@ a#button-1:hover img {
   bottom: 0;
 }
 
-#button-7 img {
+#button_7 img {
   width: 20px;
   height: auto;
 }
 
-#button-7:hover #dub-arrow {
+#button_7:hover #dub-arrow {
   left: 0;
 }
 
-#button-7:hover a {
+#button_7:hover a {
   left: 150px;
-}
-
-@media screen and (max-width:1000px) {
-  h1 {
-    font-size: 2.2em;
-  }
-  #container {
-    width: 50%;
-  }
 }
   
