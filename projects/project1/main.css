@@ -19,14 +19,16 @@ body {
   color: white;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 
 /* Heading */
 
 h1 {
+  align-self: stretch;
   margin: 0;
-  padding: 50px 20px;
+  padding: 40px 20px;
   font-size: 1.5rem;
   line-height: 3rem;
   text-align: center;
@@ -45,12 +47,13 @@ h1 {
 /* Layout Styling */
 
 .container {
+  max-width: 1280px;
   flex-grow: 1;
   padding: 50px;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 20px;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
@@ -67,6 +70,9 @@ h1 {
   overflow: hidden;
   display: inline-flex;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 a {
@@ -95,7 +101,7 @@ a {
   transform: translateX(130px);
 }
 
-a#button_1:hover svg {
+#button_1:hover .arrow_hover {
   opacity: 1;
   transform: translateX(88px);
 }
@@ -103,15 +109,13 @@ a#button_1:hover svg {
 
 /* Second Button */
 
-#button_2 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+#button_2 a {
+  z-index: 1;
+  transition: all .35s ease-Out;
 }
 
-#button_2 a {
-  position: relative;
-  transition: all .35s ease-Out;
+#button_2:hover a {
+  color: black;
 }
 
 #slide {
@@ -128,66 +132,49 @@ a#button_1:hover svg {
   left: 0;
 }
 
-#button_2:hover a {
-  color: black;
-}
-
 
 /* Third Button */
 
-#button_3 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 #button_3 a {
-  position: relative;
+  z-index: 1;
   transition: all .45s ease-Out;
-}
-
-#circle {
-  width: 0%;
-  height: 0%;
-  opacity: 0;
-  line-height: 40px;
-  border-radius: 50%;
-  background: var(--extra-color);
-  position: absolute;
-  transition: all .5s ease-Out;
-  top: 20px;
-  left: 70px;
-}
-
-#button_3:hover #circle {
-  width: 200%;
-  height: 500%;
-  opacity: 1;
-  top: -70px;
-  left: -70px;
 }
 
 #button_3:hover a {
   color: black;
 }
 
+#circle {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  border-radius: 50%;
+  background: var(--extra-color);
+  position: absolute;
+  transition: all .5s ease-Out;
+  top: 50%;
+  left: 50%;
+}
+
+#button_3:hover #circle {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  top: -120px;
+  left: -70px;
+}
+
 
 /* Fourth Button */
 
-#button_4 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 #button_4 a {
-  position: relative;
+  z-index: 1;
   transition: all .45s ease-Out;
 }
 
 #underline {
   width: 100%;
-  height: 2.5px;
+  height: 4px;
   margin-top: 15px;
   align-self: flex-end;
   left: -200px;
@@ -204,19 +191,17 @@ a#button_1:hover svg {
 
 /* Fifth Button */
 
-#button_5 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 #button_5 a {
-  position: relative;
+  z-index: 1;
   transition: all .45s ease-Out;
 }
 
+#button_5:hover a {
+  color: black;
+}
+
 #translate {
-  transform: rotate(50deg);
+  transform: rotate(45deg);
   width: 100%;
   height: 250%;
   left: -200px;
@@ -230,44 +215,12 @@ a#button_1:hover svg {
   left: 0;
 }
 
-#button_5:hover a {
-  color: black;
-}
-
 
 /* Sixth Button */
 
-#button_6 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 #button_6 a {
-  position: relative;
-  transition: all .45s ease-Out;
-}
-
-#spin {
-  width: 0;
-  height: 0;
-  opacity: 0;
-  left: 70px;
-  top: 20px;
-  transform: rotate(0deg);
-  background: none;
-  position: absolute;
-  transition: all .5s ease-Out;
-}
-
-#button_6:hover #spin {
-  width: 200%;
-  height: 500%;
-  opacity: 1;
-  left: -70px;
-  top: -70px;
-  background: var(--extra-color);
-  transform: rotate(80deg);
+  z-index: 1;
+  transition: all .6s ease-Out;
 }
 
 #button_6:hover a {
@@ -275,13 +228,30 @@ a#button_1:hover svg {
 }
 
 
-/* Seventh Button */
-
-#button_7 {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+#spin {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  left: 80px;
+  top: 20px;
+  transform: rotate(0deg);
+  background: none;
+  position: absolute;
+  transition: all 0.6s ease-in-out;
 }
+
+#button_6:hover #spin {
+  width: 200%;
+  height: 500%;
+  opacity: 1;
+  left: -85px;
+  top: -70px;
+  background: var(--extra-color);
+  transform: rotate(80deg);
+}
+
+
+/* Seventh Button */
 
 #button_7 a {
   position: relative;
@@ -289,30 +259,143 @@ a#button_1:hover svg {
   transition: all .35s ease-Out;
 }
 
+#button_7:hover a {
+  left: 150px;
+}
+
 #dub-arrow {
   width: 100%;
   height: 100%;
   background: var(--extra-color);
-  left: -200px;
   position: absolute;
-  padding: 0;
+  top: 0;
+  left: -200px;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all .35s ease-Out;
-  bottom: 0;
-}
-
-#button_7 img {
-  width: 20px;
-  height: auto;
 }
 
 #button_7:hover #dub-arrow {
   left: 0;
 }
 
-#button_7:hover a {
-  left: 150px;
+
+/* Eighth Button */
+
+#button_8 {
+  padding: 0;
+  flex-basis: 172px;
+  justify-content: flex-start;
 }
-  
+
+#button_8 > a {
+  padding: 10px 0;
+  flex-basis: 100%;
+  text-align: center;
+}
+
+#go_text {
+  background-color: var(--extra-color);
+  height: 100%;
+  overflow: hidden;
+  width: 0;
+  border-radius: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+}
+
+#button_8:hover > #go_text {
+  width: 52px;
+  transition: 0.3s;
+}
+
+/* Ninth button */
+
+#button_9 {
+  padding: 10px 0;
+  background-color: var(--bg-main-color);
+}
+
+#button_9 span {
+  transition: .5s;
+  position: relative;
+}
+
+#button_9 span:nth-child(1) {
+  padding: 10px 10px 10px 30px;
+  color: black;
+  background: var(--extra-color);
+}
+#button_9 span:nth-child(2) {
+  padding: 10px 30px 10px 10px;
+  color: white;
+  background: var(--main-color);
+}
+
+#button_9 span:nth-child(1):before {
+  content: attr(data-attr);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--extra-color);
+  padding: 10px 15px 10px 30px;
+  transition: 0.5s;
+  transform-origin: top;
+  transform: rotateX(90deg) translateY(-50%);
+}
+#button_9:hover span:nth-child(1):before {
+  transform: rotateX(0deg) translateY(0%);
+} 
+
+#button_9 span:nth-child(2):before {
+  content: attr(data-attr);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--main-color);
+  padding: 10px 30px 10px 15px;
+  transition: 0.5s;
+  transform-origin: bottom;
+  transform: rotateX(90deg) translateY(50%);
+}
+#button_9:hover span:nth-child(2):before {
+  transform: rotateX(0deg) translateY(0%);
+}
+
+#button_9 span:nth-child(1):after {
+content: attr(data-attr);
+padding: 10px 15px 10px 30px;
+position: absolute;
+top: 0;
+left: 0;
+background: var(--main-color);
+color: white;
+transform-origin: bottom;
+transform: rotateX(0deg) translateY(0%);
+transition: 0.5s;
+}
+
+#button_9:hover span:nth-child(1):after {
+transform: rotateX(90deg) translateY(50%);
+}
+
+#button_9 span:nth-child(2):after {
+  content: attr(data-attr);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--extra-color);
+  color: black;
+  padding: 10px 30px 10px 15px;
+  transition: 0.5s;
+  transform-origin: top;
+  transform: rotateX(0deg) translateY(0%);
+}
+
+#button_9:hover span:nth-child(2):after {
+  transform: rotateX(90deg) translateY(-50%);
+} 
