@@ -128,13 +128,14 @@ a {
 }
 
 .page:hover .page__description {
-	opacity: 0.85;
+	opacity: 0.92;
 	transition: opacity 0.3s;
 }
 
 .page__title {
 	width: 100%;
 	padding: 0.5em;
+	border-top: 2px solid var(--title_color);
 	color: var(--title_color);
 	font-family: var(--secondary_font);
 	font-size: 1.2rem;
