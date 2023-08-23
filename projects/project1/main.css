@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,300&display=swap');
 
 :root {
-  --bg-main-color: #FFFFFE;
+  --bg-main-color: #ebf2ff;
   --bg-extra-color: #2D3142;
   --main-color: #0026FF;
   --extra-color: #FFD900;
@@ -12,9 +12,11 @@
 }
 
 body {
+  height: 100%;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
-  background: var(--bg-main-color);
+  background: linear-gradient(135deg, var(--bg-main-color), #fefeff, var(--bg-main-color));
   font-family: 'Roboto', sans-serif;
   color: white;
   display: flex;
@@ -48,12 +50,11 @@ h1 {
 
 .container {
   max-width: 1280px;
-  flex-grow: 1;
   padding: 50px;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 40px;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
@@ -82,7 +83,7 @@ a {
 }
 
 
-/* First Button */
+/* 1st Button */
 
 .arrow_hover {
   position: absolute;
@@ -107,7 +108,7 @@ a {
 }
 
 
-/* Second Button */
+/* 2nd Button */
 
 #button_2 a {
   z-index: 1;
@@ -133,7 +134,7 @@ a {
 }
 
 
-/* Third Button */
+/* 3rd Button */
 
 #button_3 a {
   z-index: 1;
@@ -165,7 +166,7 @@ a {
 }
 
 
-/* Fourth Button */
+/* 4th Button */
 
 #button_4 a {
   z-index: 1;
@@ -189,7 +190,7 @@ a {
 }
 
 
-/* Fifth Button */
+/* 5th Button */
 
 #button_5 a {
   z-index: 1;
@@ -216,7 +217,7 @@ a {
 }
 
 
-/* Sixth Button */
+/* 6th Button */
 
 #button_6 a {
   z-index: 1;
@@ -251,7 +252,7 @@ a {
 }
 
 
-/* Seventh Button */
+/* 7th Button */
 
 #button_7 a {
   position: relative;
@@ -282,7 +283,7 @@ a {
 }
 
 
-/* Eighth Button */
+/* 8th Button */
 
 #button_8 {
   padding: 0;
@@ -313,7 +314,7 @@ a {
   transition: 0.3s;
 }
 
-/* Ninth button */
+/* 9th button */
 
 #button_9 {
   padding: 10px 0;
@@ -398,4 +399,138 @@ transform: rotateX(90deg) translateY(50%);
 
 #button_9:hover span:nth-child(2):after {
   transform: rotateX(90deg) translateY(-50%);
-} 
+}
+
+
+/* 10th Button */
+
+#button_10 {
+  background-size: 280% 100%;
+  background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);
+  background-image: linear-gradient(to right, var(--main-color), var(--bg-main-color), var(--extra-color));
+  transition: all .4s ease-in-out;
+}
+
+#button_10:hover {
+  background-position: 100% 0;
+  color: black;
+  transition: all .4s ease-in-out;
+}
+
+
+/* 11th Button */
+
+#button_11 {
+  position: relative;
+  display: inline-block;
+  z-index: 0;
+}
+
+#button_11:before {
+  content: '';
+  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, var(--main-color), #7a00ff, #ff00c8, #ff0000);
+  position: absolute;
+  top: -3px;
+  left:-3px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(7px);
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+  border-radius: 100vh;
+}
+
+#button_11:hover:before {
+  opacity: 1;
+}
+
+#button_11:after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  background: var(--main-color);
+  top: 3px;
+  left: 3px;
+  border-radius: 100vh;
+  transition: opacity .3s ease-in-out;
+}
+
+@keyframes glowing {
+  0% { background-position: 0 0; }
+  50% { background-position: 400% 0; }
+  100% { background-position: 0 0; }
+}
+
+
+/* 12th Button */
+
+#button_12 {
+  transition: 0.3s;
+}
+
+#button_12:hover {
+  box-shadow: inset 0 0 0 2em var(--extra-color);
+  color: black;
+}
+
+
+/* 13th Button */
+
+#button_13 {
+  transition: 0.3s;
+  overflow: visible;
+}
+
+#button_13:hover {
+  animation: pulse 1s;
+  box-shadow: 0 0 0 1rem rgba(255, 217, 0, 0);
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 var(--extra-color); }
+}
+
+
+/* 14th Button */
+
+#button_14 {
+  transition: 0.5s ease-out;
+}
+
+#button_14:hover {
+  box-shadow: inset -90px 0 0 0 var(--extra-color), inset 90px 0 0 0 var(--extra-color);
+  color: black;
+}
+
+
+/* 15th Button */
+
+#button_15 {
+  transition: 0.3s;
+}
+
+#button_15:hover {
+  box-shadow: 0 0.5em 0.5em -0.4em var(--main-color);
+  transform: translateY(-0.25em);
+}
+
+
+/* 16th Button */
+
+#button_16 {
+  transition: 0.25s;
+  box-shadow: 0.2rem 0.2rem 0.1rem 0 var(--main-color), inset 0.1rem 0.1rem 0 0 var(--main-color);
+  background-color: var(--extra-color);
+  color: black;
+}
+
+#button_16:hover {
+  box-shadow: 0 0 0 0, inset 200px 50px 0 0 var(--main-color);
+  color: white;
+  background-color: var(--main-color);
+}
