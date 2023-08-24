@@ -1,8 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,300&display=swap');
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, hsl(244, 71%, 27%), hsl(244, 71%, 17%), hsl(244, 71%, 22%));
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Roboto', sans-serif;
+  color: white;
+  font-weight: 300;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  letter-spacing: 5px;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+  margin-top: 1rem;
+  font-weight: 500;
+  z-index: 1;
+}
+
+h3 {
+  letter-spacing: 2px;
+  font-weight: 400;
+  z-index: 1;
+}
+
+@media (min-width: 600px) {
+  h1 {
+    letter-spacing: 10px;
+    font-size: 4rem;
+    margin-bottom: 0;
+    font-weight: 500;
+  }
+  
+  h3 {
+    letter-spacing: 2px;
+    font-weight: 400;
+  }
+}
+
+#ball_1 {
+  height: 100px;
+  aspect-ratio: 1 / 1;
+  background-color: black;
+  position: absolute;
+  top: 10%;
+  left: 30%;
+  border-radius: 100%;
+  animation: 300s linear infinite alternate ball_1;
+
+  background: rgba( 255, 255, 255, 0.2 );
+  box-shadow: inset 0 -30px 60px 0 hsl(244, 71%, 27%);
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+}
+
+@keyframes ball_1 {
+  30% { top: 30%; left: 70%; }
+  65% { top: 50%; left: 30%; }
+  100% { top: 60%; left: 35%; }
+}
+
+#ball_2 {
+  height: 300px;
+  aspect-ratio: 1 / 1;
+  background-color: black;
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  border-radius: 100%;
+  animation: 300s linear infinite alternate ball_2;
+
+  background: rgba( 255, 255, 255, 0.2 );
+  box-shadow: inset 0 -30px 60px 0 hsl(244, 71%, 27%);
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+}
+
+@keyframes ball_2 {
+  30% { top: 0%; left: 70%; }
+  65% { top: 20%; left: 60%; }
+  100% { top: 50%; left: 15%; }
+}
+
+#ball_3 {
+  height: 200px;
+  aspect-ratio: 1 / 1;
+  background-color: black;
+  position: absolute;
+  top: 80%;
+  left: 15%;
+  border-radius: 100%;
+  animation: 300s linear infinite alternate ball_3;
+
+  background: rgba( 255, 255, 255, 0.2 );
+  box-shadow: inset 0 -30px 60px 0 hsl(244, 71%, 27%);
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+}
+
+@keyframes ball_3 {
+  30% { top: 80%; left: 40%; }
+  65% { top: 50%; left: 20%; }
+  100% { top: 70%; left: 35%; }
+}
+
+.chart_container {
+  z-index: 1;
+  margin-top: 3rem;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba( 255, 255, 255, 0.2 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+}
+
+@media (min-width: 1024px) {
+	.chart_container {
+		flex-direction: row-reverse;
+	}
+}
+
 .highcharts-figure,
 .highcharts-data-table table {
   min-width: 360px;
   max-width: 800px;
   margin: 1em auto;
+  flex-grow: 1;
 }
 
 .highcharts-data-table table {
@@ -42,13 +186,18 @@
 }
 
 .selectors {
+  padding: 0 2rem;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.selector_container {
-  text-align: center;
+@media (min-width: 1024px) {
+  .selectors {
+    font-size: 1.2rem;
+    gap: 20px;
+  }
 }
 
 #day {
