@@ -25,11 +25,13 @@
 	<div id="ball_2"></div>
 	<div id="ball_3"></div>
 
-	<div class="chart_container">
+	<div class="glass_container">
 
-		<figure class="highcharts-figure">
-			<div id="container"></div>
-		</figure>
+		<div class="chart_container">		
+			<figure class="highcharts-figure">
+				<div id="container"></div>
+			</figure>
+		</div>
 
 		<div class="selectors">
 
@@ -44,14 +46,14 @@
 				<input type="date" id="day" name="day">
 			
 				<label for="month"></label>
-				<input type="month" id="month" name="month">
+				<input type="month" id="month" name="month" value="2021-01">
 			</div>
 		
 			<div class="selector_container">
 				<label for="sort_by">Sort by:</label>
 				<select name="sort_by" id="sort_by">
 					<option value="game">Game</option>
-					<option value="hours_watched">Hours watched</option>
+					<option value="hours_watched" selected="selected">Hours watched</option>
 					<option value="unique_channels">Unique channels</option>
 					<option value="average_viewers">Average viewers</option>
 					<option value="average_channels">Average channels</option>
@@ -66,20 +68,17 @@
 				<label for="order">Order:</label>
 				<select name="order" id="order">
 					<option value="asc">Ascending</option>
-					<option value="desc">Descending</option>
+					<option value="desc" selected="selected">Descending</option>
 				</select>
 			</div>
 		
 			<div class="selector_container">
 				<label for="limit">Num. games shown (0-100):</label>
-				<input type="number" id="limit" name="limit" min="0" max="100"><br><br>
+				<input type="number" id="limit" name="limit" min="0" max="100" value="25">
 			</div>
 
 		</div>
 	</div>
-
-
-
 
 </body>
 </html>
