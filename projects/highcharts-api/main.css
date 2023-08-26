@@ -36,6 +36,7 @@ select, input {
   background-color: hsla(244, 71%, 100%, 0.5);
   border: none;
   outline: none;
+  text-align: center;
 }
 
 input::-webkit-outer-spin-button,
