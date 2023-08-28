@@ -12,7 +12,7 @@ const linkParams = {
 	token: "kx8Lm6spO9Lx6xNa8lNC61Kx20Ql37",
 	sort_by: "hours_watched",
 	order: "desc",
-	limit: "25",
+	limit: "20",
 	offset: "0"
 }
 

@@ -38,11 +38,43 @@ select, input {
   outline: none;
   text-align: center;
 }
+#month {
+  max-width: 170px;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.size_blocker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.103);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.size_blocker_message {
+  background-color: rgba(255, 255, 255, 0.903);
+  color: black;
+  border: 1px solid black;
+  padding: 3rem 1rem;
+  border-radius: 10px;
+}
+
+@media (min-width: 376px) {
+  .size_blocker {
+    display: none;
+  }
 }
 
 h1 {
@@ -143,7 +175,7 @@ h3 {
 .glass_container {
   z-index: 1;
   margin-top: 3rem;
-  padding: 1rem;
+  padding: 1rem 0.5rem;
   display: flex;
   flex-direction: column-reverse;
   justify-content: center;
@@ -159,7 +191,13 @@ h3 {
 
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 400px) {
+  .glass_container {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px){
 	.glass_container {
 		flex-direction: row-reverse;
 	}
@@ -218,7 +256,7 @@ h3 {
 
 .selectors {
   flex-grow: 1;
-  padding: 0;
+  padding: 0 0.5rem;
   display: flex;
   gap: 10px;
   flex-direction: column;
