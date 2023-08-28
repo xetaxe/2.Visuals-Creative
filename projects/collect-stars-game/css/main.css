@@ -1,0 +1,91 @@
+@font-face {
+    font-family: funnyFont;
+    src: url(LuckyCoin-3zA46.ttf);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: funnyFont;
+}
+
+#stats {
+    z-index: 10;
+    position: fixed;
+    top: 10px;
+    left: 0;
+    width: calc(100%);
+    padding: 0 10px 0 20px;
+    font-size: 1.25rem;
+    color: hsl(45, 54%, 17%);
+    display: flex;
+    align-items: center;
+}
+
+#stats > div {
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+
+#stars > * {
+    padding: 0 1px;
+}
+
+#star {
+    margin-top: -2px;
+}
+
+#time {
+    margin-right: auto;
+}
+
+#mobile_controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: calc(100%);
+    border-radius: 5px;
+    border: 2px solid #5ABA4A;
+    background-color: rgba(14, 85, 38, 0.677);
+    padding: 5px 30px;
+    display: none;
+}
+
+@media (orientation: portrait) {
+    #mobile_controls {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.arrows_container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-right: auto;
+}
+
+.arrow {
+    aspect-ratio: 1/1;
+    padding: 1.2rem;
+    background-color: #5ABA4A;
+    border-radius: 100%;
+}
+
+.arrow_svg {
+    transform: scale(2) translateY(3px);
+    width: 30px;
+}
+
+#jump {
+    aspect-ratio: 1/1;
+    padding: 1rem;
+    font-size: 1.5rem;
+    border-radius: 100%;
+    background-color: #5ABA4A;
+    display: flex;
+    align-items: center;
+}

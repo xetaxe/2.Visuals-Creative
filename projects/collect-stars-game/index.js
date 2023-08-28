@@ -1,7 +1,7 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
-const gravity = 2;
-const MAX_VY = 30;
+const gravity = 1.6;
+const MAX_VY = 26;
 
 const platform_grass = document.getElementById("platform_grass");
 const background = document.getElementById("background");
@@ -36,8 +36,8 @@ class Player {
         this.abs_y = 300;
         this.vx = 0;
         this.vy = 0;
-        this.width = 60;
-        this.height = 60;
+        this.width = 48;
+        this.height = 48;
         this.falling = true;
         this.image = sprite;
         this.tick = 1;
@@ -208,16 +208,15 @@ addEventListener('keydown', ({key}) => {
         case "a":
             keys.left.pressed = true
             break
+        case "d":
+            keys.right.pressed = true
+            break
         case "w":
         // if (!player.falling)
             player.vy = -28;
             player.falling = true;
             break
-        case "d":
-            keys.right.pressed = true
-            break
-    }
-
+        }
 })
 
 addEventListener('keyup', ({key}) => {
@@ -230,3 +229,27 @@ addEventListener('keyup', ({key}) => {
             break
     } 
 })
+
+
+// Controls for mobile 
+
+document.getElementById("left_arrow").addEventListener('touchstart', () => {
+    keys.left.pressed = true;
+})
+document.getElementById("left_arrow").addEventListener('touchend', () => {
+    keys.left.pressed = false;
+})
+
+document.getElementById("right_arrow").addEventListener('touchstart', () => {
+    keys.right.pressed = true;
+})
+document.getElementById("right_arrow").addEventListener('touchend', () => {
+    keys.right.pressed = false;
+})
+
+document.getElementById("jump").addEventListener('click', () => {
+    // if (!player.falling)
+    player.vy = -28;
+    player.falling = true;
+})
+
