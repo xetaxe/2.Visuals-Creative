@@ -253,3 +253,22 @@ document.getElementById("jump").addEventListener('click', () => {
     player.falling = true;
 })
 
+document.getElementById("jump").addEventListener('touchstart', (e) => {
+
+    e.preventDefault();
+    // if (!player.falling)
+    player.vy = -28;
+    player.falling = true;
+
+    if(e.touches.length > 1 && 
+    (e.touches.item(0).id ===  "left_arrow" || 
+    e.touches.item(1).id ===  "left_arrow")) {
+        keys.left.pressed === true
+    }
+
+    if(e.touches.length > 1 && 
+    (e.touches.item(0).id ===  "right_arrow" || 
+    e.touches.item(1).id ===  "right_arrow")) {
+        keys.right.pressed === true
+    }
+})
