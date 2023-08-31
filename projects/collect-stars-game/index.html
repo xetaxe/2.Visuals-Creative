@@ -23,6 +23,35 @@
 			</div>
 			<div id="help"> Help </div>
 		</div>
+		<div id="help_box">
+
+		</div>
+
+		<div id="go_message" class="fadeout">
+			GO!
+		</div>
+
+		<div id="help_menu_container" class="hide">
+			<div style="overflow: scroll;">		
+				<div id="help_menu_content">
+					<div id="close_help_menu">
+						<span id="close_button">x</span>
+					</div>
+					Collect all the stars before the time runs out!</br></br>
+					If you are playing on a PC, use the WASD keys to control the ball (well, "S" does nothing :P).</br></br>
+					<img src="textures/wasd.png" fetchpriority="low" alt="WASD controls"></br>
+					If you are playing on your phone, little controllers will appear at the bottom of the screen, similar to a Gameboy :)</br></br>
+					<img src="textures/mobile.png" fetchpriority="low" alt="WASD controls"></br></br>
+					<span>
+						If you see any bugs or have any comments, do not doubt to create an issue in the <a href="https://github.com/xetaxe/Visuals-Creative/tree/master/projects/collect-stars-game" target="_blank">Github</a> of the project.
+					</span></br></br>
+					<div style="display: flex; align-items: center;">
+						<span id="good_luck" style="margin-right: auto;">Good luck!</span>
+						<span id="restart_game" styyle="font-size: 1.2rem;">RESTART GAME >></span>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<canvas></canvas>
 
@@ -44,9 +73,12 @@
 			</span>
 		</div>
 
-		<img src="./textures/platform_grass.png" id="platform_grass" alt="Platform grass texture" style="display: none">
-		<img src="./textures/background.png" id="background" alt="Background" style="display: none">
-		<img src="./textures/cloud.webp" id="cloud" alt="Cloud" style="display: none">
-		<img src="./textures/sprite.png" id="sprite" alt="Sprite" style="display: none">
+		<picture>
+			<source srcset="./textures/background_mobile.png" media="(orientation: portrait)" />
+			<img src="./textures/background.png" id="background" alt="Background" style="display: none" />
+		</picture>
+		<img src="./textures/platform_grass.png" id="platform_grass" alt="Platform grass texture" style="display: none" />
+		<img src="./textures/cloud.webp" id="cloud" alt="Cloud" style="display: none" />
+		<img src="./textures/sprite.png" id="sprite" alt="Sprite" style="display: none" />
 	</body>
 </html>

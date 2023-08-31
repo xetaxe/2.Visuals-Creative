@@ -1,7 +1,9 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
-const gravity = 1.6;
+const GRAVITY = 1.6;
 const MAX_VY = 26;
+const TIME_PER_GAME = 100;
+const TOTAL_STARS = 30;
 
 const platform_grass = document.getElementById("platform_grass");
 const background = document.getElementById("background");
@@ -40,14 +42,14 @@ class Player {
         this.height = 48;
         this.falling = true;
         this.image = sprite;
+        this.rotation = 3;
         this.tick = 1;
     }
 
 
 
     draw() {
-        c.drawImage(this.image, 32 * Math.floor(this.tick), 0, 32, 32, this.x, this.y,
-            this.width, this.height);
+        c.drawImage(this.image, 32 * Math.floor(this.tick), 0, 32, 32, this.x, this.y, this.width, this.height);
     }
 
     update() {
@@ -62,7 +64,7 @@ class Player {
         this.y += this.vy;
         this.x += this.vx;
         if (this.falling && this.vy < MAX_VY){
-            this.vy += gravity;
+            this.vy += GRAVITY;
         }
         this.draw();
     }
@@ -139,6 +141,32 @@ const keys = {
         pressed: false
     }
 }
+
+let current_time = TIME_PER_GAME;
+document.getElementById("current_time").innerHTML = current_time;
+let timeInterval = setInterval(() => {
+    current_time -= 1;
+    if(current_time < 0){
+        // document.getElementById("go_message").style.animation = 'none';
+        // document.getElementById("go_message").offsetHeight;
+        // document.getElementById("go_message").style.animation = null;
+        clearInterval(timeInterval)
+        return
+    }
+    document.getElementById("current_time").innerHTML = current_time;
+}, 1000)
+
+let current_stars = 0;
+document.getElementById("total_stars").innerHTML = TOTAL_STARS;
+document.getElementById("current_stars").innerHTML = current_stars;
+
+document.getElementById("help").addEventListener('click', () => {
+    document.getElementById("help_menu_container").classList.remove("hide");
+})
+document.getElementById("close_button").addEventListener('click', () => {
+    document.getElementById("help_menu_container").classList.add("hide");
+})
+
 
 function animate() {
     requestAnimationFrame(animate);
@@ -260,13 +288,13 @@ document.getElementById("jump").addEventListener('touchstart', (e) => {
     player.vy = -28;
     player.falling = true;
 
-    if(e.touches.length > 1 && 
+    if(e.touches.length == 2 && 
     (e.touches.item(0).id ===  "left_arrow" || 
     e.touches.item(1).id ===  "left_arrow")) {
         keys.left.pressed === true
     }
 
-    if(e.touches.length > 1 && 
+    if(e.touches.length == 2 && 
     (e.touches.item(0).id ===  "right_arrow" || 
     e.touches.item(1).id ===  "right_arrow")) {
         keys.right.pressed === true
