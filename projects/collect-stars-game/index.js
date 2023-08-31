@@ -1,27 +1,36 @@
-const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
+///// CONSTANTS AND IMPORTANT VARIABLES /////
+
 const GRAVITY = 1.6;
 const MAX_VY = 26;
 const TIME_PER_GAME = 100;
 const TOTAL_STARS = 30;
 
-const platform_grass = document.getElementById("platform_grass");
-const background = document.getElementById("background");
-const cloud = document.getElementById("cloud");
-const sprite = document.getElementById("sprite");
-
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-const R_MARGIN = canvas.width / 3;
-const L_MARGIN = canvas.width / 9;
-const T_MARGIN = canvas.height / 9;
-const B_MARGIN = canvas.height * (8 / 9);
-
+// Level dimensions
 const R_LIMIT = 5000;
 const L_LIMIT = -5000;
 const T_LIMIT = -3000;
 const B_LIMIT = 1000;
+
+//Images and canvas
+const platform_grass = document.getElementById("platform_grass");
+const background = document.getElementById("background");
+const cloud = document.getElementById("cloud");
+const sprite = document.getElementById("sprite");
+const star = document.getElementById("star");
+
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+//Normal window of movement for the ball
+let R_MARGIN = canvas.width / 3;
+let L_MARGIN = canvas.width / 9;
+let T_MARGIN = canvas.height / 9;
+let B_MARGIN = canvas.height * (8 / 9);
+
+
+///// HANDLE WINDOW RESIZING /////
 
 addEventListener("resize", () => {
     canvas.width = innerWidth;
@@ -30,23 +39,23 @@ addEventListener("resize", () => {
     L_MARGIN = canvas.width / 9;
 })
 
+
+///// GAME ENTITIES /////
+
 class Player {
     constructor() {
-        this.x = 100;
+        this.x = 100; //Position in canvas
         this.y = 300;
-        this.abs_x = 100;
+        this.abs_x = 100; //Position in level
         this.abs_y = 300;
         this.vx = 0;
         this.vy = 0;
-        this.width = 48;
+        this.width = 48; //Ball size
         this.height = 48;
-        this.falling = true;
+        this.falling = true; //Checks floor below ball
         this.image = sprite;
-        this.rotation = 3;
-        this.tick = 1;
+        this.tick = 1; //Controls ball jumping animation
     }
-
-
 
     draw() {
         c.drawImage(this.image, 32 * Math.floor(this.tick), 0, 32, 32, this.x, this.y, this.width, this.height);
@@ -55,12 +64,13 @@ class Player {
     update() {
         this.tick += 0.4;
         if (!keys.left.pressed && !keys.right.pressed){
-            this.tick -= 0.38;
-            if (this.tick >= 2)
+            this.tick -= 0.38; //Ball movement when resting 
+            if (this.tick >= 2) // Toggles between 0 and 1
                 this.tick = 0;
         }
-        if (this.tick >= 8)
+        if (this.tick >= 8) //Ball in motion, sprite contains 0-7 frames
             this.tick = 0;
+            
         this.y += this.vy;
         this.x += this.vx;
         if (this.falling && this.vy < MAX_VY){
@@ -71,20 +81,18 @@ class Player {
 }
 
 class Platform {
-    constructor(x, y, w, h, image){
+    constructor(x, y, w){
         this.x = x;
         this.y = y;
-        this.vx = 0,
+        this.vx = 0, //Counters ball movement by moving in opposite velocity
         this.vy = 0,
         this.width = w;
-        this.height = h;
-        this.image = image;
+        this.height = 40;
+        this.image = platform_grass;
     }
 
     draw() {
-        c.fillStyle = "blue";
-        c.drawImage(this.image, this.x, this.y - 8,
-            this.width, this.height)
+        c.drawImage(this.image, this.x, this.y - 9, this.width, this.height)
     }
 
     update() {
@@ -92,24 +100,21 @@ class Platform {
         this.y += this.vy;
         this.x += this.vx;
     }
-
 }
 
 class Cloud {
-    constructor(x, y, w, h, image){
+    constructor(x, y, w, h){
         this.x = x;
         this.y = y;
-        this.vx = 0,
+        this.vx = 0, //Counters ball movement by moving in opposite velocity
         this.vy = 0,
         this.width = w;
         this.height = h;
-        this.image = image;
+        this.image = cloud;
     }
 
     draw() {
-        c.fillStyle = "blue";
-        c.drawImage(this.image, this.x, this.y,
-            this.width, this.height)
+        c.drawImage(this.image, this.x, this.y, this.width, this.height)
     }
 
     update() {
@@ -117,20 +122,44 @@ class Cloud {
         this.y += this.vy;
         this.x += this.vx;
     }
+}
 
+class Star {
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+        this.vx = 0, //Counters ball movement by moving in opposite velocity
+        this.vy = 0,
+        this.width = 36;
+        this.height = 36;
+        this.image = star;
+    }
+
+    draw() {
+        c.drawImage(this.image, this.x, this.y, this.width, this.height)
+    }
+
+    update() {
+        this.draw();
+        this.y += this.vy;
+        this.x += this.vx;
+    }
 }
 
 const player = new Player();
 const platforms = [];
 const clouds = [];
+const stars = [];
 for(let i=0; i<200; i++){
     let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
     let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
     let w = Math.floor(Math.random() * (600 - 100) + 100);
     // let h = Math.floor(Math.random() * (40 - 5) + 5);
-    platforms.push(new Platform(x, y, w, 40, platform_grass))
+    platforms.push(new Platform(x, y, w))
     if (i % 5 === 0)
-        clouds.push(new Cloud(-x, -y, w, 0.75*w, cloud))
+        clouds.push(new Cloud(x + 30, y + 30, w, 0.75*w))
+    if (i % 5 === 0)
+        stars.push(new Star(150, 300))
 }
 
 const keys = {
@@ -226,6 +255,7 @@ function animate() {
 
     clouds.forEach( cloud => cloud.update());
     platforms.forEach( platform => platform.update());
+    // stars.forEach( star => star.update());
     player.update();
 }
     
