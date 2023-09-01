@@ -22,6 +22,8 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+if(innerHeight > innerWidth) //In portrait, substract 100px for mobile controls
+    canvas.height -= 100;
 
 //Normal window of movement for the ball
 let R_MARGIN = canvas.width / 3;
@@ -32,9 +34,11 @@ let B_MARGIN = canvas.height * (8 / 9);
 
 ///// HANDLE WINDOW RESIZING /////
 
-addEventListener("resize", () => {
+window.addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
+    if(innerHeight > innerWidth)
+        canvas.height -= 100;
     R_MARGIN = canvas.width / 3;
     L_MARGIN = canvas.width / 9;
 })
@@ -44,11 +48,9 @@ addEventListener("resize", () => {
 
 class Player {
     constructor() {
-        this.x = 100; //Position in canvas
+        this.x = 100; //Position in level
         this.y = 300;
-        this.abs_x = 100; //Position in level
-        this.abs_y = 300;
-        this.vx = 0;
+        this.vx = 0; //Velocity to add to position at each frame
         this.vy = 0;
         this.width = 48; //Ball size
         this.height = 48;
@@ -106,7 +108,7 @@ class Cloud {
     constructor(x, y, w, h){
         this.x = x;
         this.y = y;
-        this.vx = 0, //Counters ball movement by moving in opposite velocity
+        this.vx = 0,
         this.vy = 0,
         this.width = w;
         this.height = h;
@@ -128,7 +130,7 @@ class Star {
     constructor(x, y){
         this.x = x;
         this.y = y;
-        this.vx = 0, //Counters ball movement by moving in opposite velocity
+        this.vx = 0,
         this.vy = 0,
         this.width = 36;
         this.height = 36;
@@ -145,6 +147,69 @@ class Star {
         this.x += this.vx;
     }
 }
+
+
+///// BASIC UI INTERACTION FUNCTIONS /////
+
+function displayGameTime(time) {
+    document.getElementById("current_time").innerHTML = time;
+}
+
+function updateStars(current_stars) {
+    document.getElementById("total_stars").innerHTML = TOTAL_STARS;
+    document.getElementById("current_stars").innerHTML = current_stars;
+}
+
+//Show & hide help menu
+document.getElementById("help").addEventListener('click', () => {
+    document.getElementById("help_menu_container").classList.remove("hide");
+})
+document.getElementById("close_button").addEventListener('click', () => {
+    document.getElementById("help_menu_container").classList.add("hide");
+})
+
+//Click restart game
+document.getElementById("restart_game").addEventListener('click', () => {
+    document.getElementById("help_menu_container").classList.add("hide");
+    showGoMessage();
+})
+
+function showGoMessage() {
+    document.getElementById("go_message").style.animation = 'none';
+    document.getElementById("go_message").offsetHeight;
+    document.getElementById("go_message").style.animation = null;
+}
+
+
+function showWinDialog() {
+    document.getElementById("win_modal").classList.remove("hide");
+}
+function showLoseDialog() {
+    document.getElementById("lose_modal").classList.remove("hide");
+}
+
+function removeDialogs() {
+    document.getElementById("win_modal").classList.add("hide");
+    document.getElementById("lose_modal").classList.add("hide");
+}
+
+
+let currentTime = TIME_PER_GAME;
+displayGameTime(currentTime);
+let timeInterval = setInterval(() => {
+    currentTime -= 1;
+    if(currentTime < 0){
+        clearInterval(timeInterval)
+        return
+    }
+    displayGameTime(currentTime);
+}, 1000)
+
+let currentStars = 0;
+updateStars(currentStars);
+
+
+///// GAME LOGIC /////
 
 const player = new Player();
 const platforms = [];
@@ -170,31 +235,6 @@ const keys = {
         pressed: false
     }
 }
-
-let current_time = TIME_PER_GAME;
-document.getElementById("current_time").innerHTML = current_time;
-let timeInterval = setInterval(() => {
-    current_time -= 1;
-    if(current_time < 0){
-        // document.getElementById("go_message").style.animation = 'none';
-        // document.getElementById("go_message").offsetHeight;
-        // document.getElementById("go_message").style.animation = null;
-        clearInterval(timeInterval)
-        return
-    }
-    document.getElementById("current_time").innerHTML = current_time;
-}, 1000)
-
-let current_stars = 0;
-document.getElementById("total_stars").innerHTML = TOTAL_STARS;
-document.getElementById("current_stars").innerHTML = current_stars;
-
-document.getElementById("help").addEventListener('click', () => {
-    document.getElementById("help_menu_container").classList.remove("hide");
-})
-document.getElementById("close_button").addEventListener('click', () => {
-    document.getElementById("help_menu_container").classList.add("hide");
-})
 
 
 function animate() {
@@ -260,7 +300,11 @@ function animate() {
 }
     
 animate();
-    
+
+
+///// GAME CONTROLS /////
+
+// Controls for PC
 addEventListener('keydown', ({key}) => {
     switch (key.toLowerCase()) {
         case "a":
