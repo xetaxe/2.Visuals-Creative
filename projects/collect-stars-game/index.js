@@ -3,12 +3,16 @@
 const GRAVITY = 1.6;
 const MAX_VY = 26;
 const TIME_PER_GAME = 100;
-const TOTAL_STARS = 30;
+const STARS_PER_GAME = 30;
+const PLATFORMS_PER_GAME = 200;
+const PLATFORM_MIN_WIDTH = 100;
+const PLATFORM_MAX_WIDTH = 600;
+const CLOUDS_PER_GAME = 200;
 
 // Level dimensions
-const R_LIMIT = 5000;
-const L_LIMIT = -5000;
-const T_LIMIT = -3000;
+const R_LIMIT = 3000;
+const L_LIMIT = -3000;
+const T_LIMIT = -2000;
 const B_LIMIT = 1000;
 
 //Images and canvas
@@ -80,6 +84,15 @@ class Player {
         }
         this.draw();
     }
+
+    reset() {
+        this.x = 100;
+        this.y = 300;
+        this.vx = 0;
+        this.vy = 0;
+        this.falling = true;
+        this.tick = 1;
+    }
 }
 
 class Platform {
@@ -135,6 +148,7 @@ class Star {
         this.width = 36;
         this.height = 36;
         this.image = star;
+        this.taken = false;
     }
 
     draw() {
@@ -151,35 +165,40 @@ class Star {
 
 ///// BASIC UI INTERACTION FUNCTIONS /////
 
-function displayGameTime(time) {
-    document.getElementById("current_time").innerHTML = time;
-}
-
-function updateStars(current_stars) {
-    document.getElementById("total_stars").innerHTML = TOTAL_STARS;
-    document.getElementById("current_stars").innerHTML = current_stars;
-}
-
 //Show & hide help menu
 document.getElementById("help").addEventListener('click', () => {
     document.getElementById("help_menu_container").classList.remove("hide");
+    stopTimer();
 })
 document.getElementById("close_button").addEventListener('click', () => {
     document.getElementById("help_menu_container").classList.add("hide");
+    startTimer(false);
 })
 
-//Click restart game
+//Click restart game, try again, or play again buttons
 document.getElementById("restart_game").addEventListener('click', () => {
     document.getElementById("help_menu_container").classList.add("hide");
-    showGoMessage();
+    startGame();
 })
+
+document.getElementById("try_again").addEventListener('click', () => {
+    startGame();
+})
+
+function displayTime(time) {
+    document.getElementById("current_time").innerHTML = time;
+}
+
+function displayStars(currentStars) {
+    document.getElementById("total_stars").innerHTML = STARS_PER_GAME;
+    document.getElementById("current_stars").innerHTML = currentStars;
+}
 
 function showGoMessage() {
     document.getElementById("go_message").style.animation = 'none';
     document.getElementById("go_message").offsetHeight;
     document.getElementById("go_message").style.animation = null;
 }
-
 
 function showWinDialog() {
     document.getElementById("win_modal").classList.remove("hide");
@@ -194,51 +213,171 @@ function removeDialogs() {
 }
 
 
-let currentTime = TIME_PER_GAME;
-displayGameTime(currentTime);
-let timeInterval = setInterval(() => {
-    currentTime -= 1;
-    if(currentTime < 0){
-        clearInterval(timeInterval)
-        return
-    }
-    displayGameTime(currentTime);
-}, 1000)
+///// GAME CONTROLS /////
 
-let currentStars = 0;
-updateStars(currentStars);
+// Stores whether the player is pressing the controllers or not
+const keys = {
+    right: { pressed: false },
+    left: { pressed: false }
+}
+
+// Controls for PC
+addEventListener('keydown', ({key}) => {
+    switch (key.toLowerCase()) {
+        case "a":
+            keys.left.pressed = true
+            break
+        case "d":
+            keys.right.pressed = true
+            break
+        case "w":
+            if (!player.falling){
+                player.vy = -28;
+                player.falling = true;
+            }
+            break
+        }
+})
+
+addEventListener('keyup', ({key}) => {
+    switch (key.toLowerCase()) {
+        case "a":
+            keys.left.pressed = false
+            break
+        case "d":
+            keys.right.pressed = false
+            break
+    } 
+})
+
+// Controls for mobile 
+document.getElementById("left_arrow").addEventListener('touchstart', () => {
+    keys.left.pressed = true;
+})
+document.getElementById("left_arrow").addEventListener('touchend', () => {
+    keys.left.pressed = false;
+})
+
+document.getElementById("right_arrow").addEventListener('touchstart', () => {
+    keys.right.pressed = true;
+})
+document.getElementById("right_arrow").addEventListener('touchend', () => {
+    keys.right.pressed = false;
+})
+
+document.getElementById("jump").addEventListener('touchstart', (e) => {
+
+    e.preventDefault();
+    if (!player.falling){
+        player.vy = -28;
+        player.falling = true;
+    }
+
+    if(e.touches.length == 2 && 
+    (e.touches.item(0).id ===  "left_arrow" || 
+    e.touches.item(1).id ===  "left_arrow")) {
+        keys.left.pressed === true
+    }
+
+    if(e.touches.length == 2 && 
+    (e.touches.item(0).id ===  "right_arrow" || 
+    e.touches.item(1).id ===  "right_arrow")) {
+        keys.right.pressed === true
+    }
+})
 
 
 ///// GAME LOGIC /////
 
+// Handle game time
+let time;
+let timeInterval;
+
+function startTimer(newGame = true) {
+    if (newGame)
+        time = TIME_PER_GAME;
+    displayTime(time);
+
+    timeInterval = setInterval(() => {
+        time -= 1;
+        if(time < 0){
+            loseGame();
+            return
+        }
+        displayTime(time);
+    }, 1000)
+}
+
+function stopTimer() {
+    clearInterval(timeInterval)
+}
+
+
+// Handle stars
+let currentStars = 0;
+displayStars(currentStars);
+
+function checkStarDistance(player, starArray) {
+    for(let i=0; i<starArray.length; i++){
+        if(Math.abs(player.x - starArray[i].x) + Math.abs(player.y - starArray[i].y) < 20);
+        takeStar(starArray[i], starArray);
+    }
+}
+
+function takeStar(starIndex, starArray){
+    starArray[starIndex].taken = true;
+    currentStars++;
+    displayStars(currentStars);
+
+    if(currentStars === STARS_PER_GAME)
+        winGame();
+}
+
+
+// Fundamental game variables
 const player = new Player();
 const platforms = [];
 const clouds = [];
 const stars = [];
-for(let i=0; i<200; i++){
-    let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
-    let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
-    let w = Math.floor(Math.random() * (600 - 100) + 100);
-    // let h = Math.floor(Math.random() * (40 - 5) + 5);
-    platforms.push(new Platform(x, y, w))
-    if (i % 5 === 0)
-        clouds.push(new Cloud(x + 30, y + 30, w, 0.75*w))
-    if (i % 5 === 0)
-        stars.push(new Star(150, 300))
-}
 
-const keys = {
-    right: {
-        pressed: false
-    },
-    left: {
-        pressed: false
+function generateGame(){
+    platforms.push(new Platform(L_LIMIT, B_LIMIT, (R_LIMIT - L_LIMIT) + 1000))
+    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+        let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
+        let y = Math.floor(Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT) / 200) * 200;
+        let w = Math.floor(Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH) + PLATFORM_MIN_WIDTH);
+        platforms.push(new Platform(x, y, w))
+    }
+
+    for(let i=0; i<CLOUDS_PER_GAME; i++){
+        let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
+        let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
+        let w = Math.floor(Math.random() * (300 - 100) + 100);
+        let h = Math.floor(Math.random() * (300 - 100) + 100);
+        clouds.push(new Cloud(x, y, w, h))
+    }
+
+    for(let i=0; i<STARS_PER_GAME; i++){
+        let starPlatformIndex = Math.floor(Math.random() * PLATFORMS_PER_GAME)
+        let starPlatform = platforms[starPlatformIndex];
+        let x = starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10);
+        let y = starPlatform.y - 20;
+        stars.push(new Star(x, y))
     }
 }
 
+function deletePreviousGame() {
+    player.reset();
+    platforms.splice(0, platforms.length);
+    clouds.splice(0, clouds.length);
+    stars.splice(0, stars.length);
+}
 
-function animate() {
-    requestAnimationFrame(animate);
+
+// Animation and collision checks logic
+let animationID;
+function animateGame() {
+    animationID = requestAnimationFrame(animateGame);
     c.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     player.falling = true;
@@ -295,82 +434,30 @@ function animate() {
 
     clouds.forEach( cloud => cloud.update());
     platforms.forEach( platform => platform.update());
-    // stars.forEach( star => star.update());
+    stars.forEach( star => star.update());
     player.update();
 }
+
+
+// Start, win and lose game functions
+function startGame() {
+    removeDialogs();
+    deletePreviousGame()
+    generateGame();
+    startTimer();
+    animateGame();
+}
+
+function winGame() {
+    cancelAnimationFrame(animationID);
+    stopTimer();
+    showWinDialog();
+}
+
+function loseGame() {
+    cancelAnimationFrame(animationID);
+    stopTimer();
+    showLoseDialog();
+}
     
-animate();
-
-
-///// GAME CONTROLS /////
-
-// Controls for PC
-addEventListener('keydown', ({key}) => {
-    switch (key.toLowerCase()) {
-        case "a":
-            keys.left.pressed = true
-            break
-        case "d":
-            keys.right.pressed = true
-            break
-        case "w":
-        // if (!player.falling)
-            player.vy = -28;
-            player.falling = true;
-            break
-        }
-})
-
-addEventListener('keyup', ({key}) => {
-    switch (key.toLowerCase()) {
-        case "a":
-            keys.left.pressed = false
-            break
-        case "d":
-            keys.right.pressed = false
-            break
-    } 
-})
-
-
-// Controls for mobile 
-
-document.getElementById("left_arrow").addEventListener('touchstart', () => {
-    keys.left.pressed = true;
-})
-document.getElementById("left_arrow").addEventListener('touchend', () => {
-    keys.left.pressed = false;
-})
-
-document.getElementById("right_arrow").addEventListener('touchstart', () => {
-    keys.right.pressed = true;
-})
-document.getElementById("right_arrow").addEventListener('touchend', () => {
-    keys.right.pressed = false;
-})
-
-document.getElementById("jump").addEventListener('click', () => {
-    // if (!player.falling)
-    player.vy = -28;
-    player.falling = true;
-})
-
-document.getElementById("jump").addEventListener('touchstart', (e) => {
-
-    e.preventDefault();
-    // if (!player.falling)
-    player.vy = -28;
-    player.falling = true;
-
-    if(e.touches.length == 2 && 
-    (e.touches.item(0).id ===  "left_arrow" || 
-    e.touches.item(1).id ===  "left_arrow")) {
-        keys.left.pressed === true
-    }
-
-    if(e.touches.length == 2 && 
-    (e.touches.item(0).id ===  "right_arrow" || 
-    e.touches.item(1).id ===  "right_arrow")) {
-        keys.right.pressed === true
-    }
-})
+startGame();

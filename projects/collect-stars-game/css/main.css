@@ -176,6 +176,11 @@ a {
     max-width: 80px;
 }
 
+#restart_game, #try_again, #play_again {
+    cursor: pointer;
+}
+
+
 .hide {
     display: none !important;
 }
