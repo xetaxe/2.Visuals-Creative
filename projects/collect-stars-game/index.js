@@ -2,6 +2,7 @@
 
 const GRAVITY = 1.6;
 const MAX_VY = 26;
+const PLAYER_XSPEED = 5;
 const TIME_PER_GAME = 100;
 const STARS_PER_GAME = 30;
 const PLATFORMS_PER_GAME = 200;
@@ -52,8 +53,9 @@ window.addEventListener("resize", () => {
 
 class Player {
     constructor() {
-        this.x = 100; //Position in level
+        this.x = 100; //Position in canvas
         this.y = 300;
+        this.x_limit = 0; //x position in level
         this.vx = 0; //Velocity to add to position at each frame
         this.vy = 0;
         this.width = 48; //Ball size
@@ -79,6 +81,10 @@ class Player {
             
         this.y += this.vy;
         this.x += this.vx;
+        if (keys.left.pressed && L_LIMIT < this.x_limit)
+            this.x_limit -= PLAYER_XSPEED;
+        if (keys.right.pressed && R_LIMIT > this.x_limit)
+            this.x_limit += PLAYER_XSPEED;
         if (this.falling && this.vy < MAX_VY){
             this.vy += GRAVITY;
         }
@@ -88,6 +94,7 @@ class Player {
     reset() {
         this.x = 100;
         this.y = 300;
+        this.x_limit = 0;
         this.vx = 0;
         this.vy = 0;
         this.falling = true;
@@ -111,9 +118,9 @@ class Platform {
     }
 
     update() {
-        this.draw();
         this.y += this.vy;
         this.x += this.vx;
+        this.draw();
     }
 }
 
@@ -133,9 +140,9 @@ class Cloud {
     }
 
     update() {
-        this.draw();
         this.y += this.vy;
         this.x += this.vx;
+        this.draw();
     }
 }
 
@@ -152,13 +159,14 @@ class Star {
     }
 
     draw() {
-        c.drawImage(this.image, this.x, this.y, this.width, this.height)
+        if(!this.taken)
+            c.drawImage(this.image, this.x, this.y, this.width, this.height)
     }
 
     update() {
-        this.draw();
         this.y += this.vy;
         this.x += this.vx;
+        this.draw();
     }
 }
 
@@ -182,6 +190,10 @@ document.getElementById("restart_game").addEventListener('click', () => {
 })
 
 document.getElementById("try_again").addEventListener('click', () => {
+    startGame();
+})
+
+document.getElementById("play_again").addEventListener('click', () => {
     startGame();
 })
 
@@ -314,20 +326,27 @@ function stopTimer() {
 
 
 // Handle stars
-let currentStars = 0;
-displayStars(currentStars);
+let currentStars;
 
-function checkStarDistance(player, starArray) {
-    for(let i=0; i<starArray.length; i++){
-        if(Math.abs(player.x - starArray[i].x) + Math.abs(player.y - starArray[i].y) < 20);
-        takeStar(starArray[i], starArray);
-    }
+function resetStarCounter() {
+    currentStars = 0;
+    displayStars(currentStars);
+}
+
+function starIsClose(player, star) {
+    if(Math.abs(player.x - star.x) + Math.abs(player.y - star.y) < 50)
+        return true
+    
+    return false
 }
 
 function takeStar(starIndex, starArray){
-    starArray[starIndex].taken = true;
-    currentStars++;
-    displayStars(currentStars);
+    if(!starArray[starIndex].taken) {
+
+        starArray[starIndex].taken = true;
+        currentStars++;
+        displayStars(currentStars);
+    }
 
     if(currentStars === STARS_PER_GAME)
         winGame();
@@ -341,8 +360,10 @@ const clouds = [];
 const stars = [];
 
 function generateGame(){
-    platforms.push(new Platform(L_LIMIT, B_LIMIT, (R_LIMIT - L_LIMIT) + 1000))
-    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+    let basePlatform = new Platform(L_LIMIT - 500, B_LIMIT, (R_LIMIT - L_LIMIT) + 2000);
+    platforms.push(basePlatform);
+
+    for(let i=1; i<PLATFORMS_PER_GAME; i++){
         let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
         let y = Math.floor(Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT) / 200) * 200;
         let w = Math.floor(Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH) + PLATFORM_MIN_WIDTH);
@@ -358,10 +379,14 @@ function generateGame(){
     }
 
     for(let i=0; i<STARS_PER_GAME; i++){
-        let starPlatformIndex = Math.floor(Math.random() * PLATFORMS_PER_GAME)
-        let starPlatform = platforms[starPlatformIndex];
-        let x = starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10);
-        let y = starPlatform.y - 20;
+        let starPlatformIndex, starPlatform, x, y;
+        do {
+            starPlatformIndex = Math.floor(Math.random() * PLATFORMS_PER_GAME)
+            starPlatform = platforms[starPlatformIndex];
+            x = starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10);
+            y = starPlatform.y - 100;
+            console.log(x, y)
+        } while(stars.filter( star => Math.abs(x - star.x) + Math.abs(y - star.y) < 100).length > 0); // To prevent close stars
         stars.push(new Star(x, y))
     }
 }
@@ -381,60 +406,97 @@ function animateGame() {
     c.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     player.falling = true;
-    
-    if (keys.right.pressed && player.x < R_MARGIN)
-        player.vx = 5
-    else if (keys.left.pressed && player.x > L_MARGIN)
-        player.vx = -5
+
+    if ((keys.right.pressed && player.x < R_MARGIN) || 
+    (keys.right.pressed && (player.x_limit + R_MARGIN) > R_LIMIT && (player.x + player.width) < canvas.width))
+        player.vx = PLAYER_XSPEED;
+    else if ((keys.left.pressed && player.x > L_MARGIN) || 
+    (keys.left.pressed && (player.x_limit - L_MARGIN) < L_LIMIT && player.x > 0))
+        player.vx = -PLAYER_XSPEED;
     else
         player.vx = 0;
 
 
-    if (keys.right.pressed && player.x >= R_MARGIN){
-        platforms.forEach( platform => platform.vx = -5);
-        clouds.forEach( cloud => cloud.vx = -1);
-    }
-    else if (keys.left.pressed && player.x <= L_MARGIN){
-        platforms.forEach( platform => platform.vx = 5);
-        clouds.forEach( cloud => cloud.vx = 1);
-    }
-    else {
-        platforms.forEach( platform => platform.vx = 0);
-        clouds.forEach( cloud => cloud.vx = -0.1);
+    for(let i=0; i<CLOUDS_PER_GAME; i++){
+        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+            clouds[i].vx = -1;
+        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+            clouds[i].vx = 1;
+        else
+            clouds[i].vx = -0.1;
+
+        if (player.y + player.vy <= T_MARGIN)
+            clouds[i].vy = -(player.vy / 10);
+        else if (player.y + player.vy + player.height >= B_MARGIN)
+            clouds[i].vy = -(player.vy / 10);
+        else
+            clouds[i].vy = 0;
     }
 
-    platforms.forEach( platform => {
-        if (player.y + player.height <= platform.y && player.y + player.height + player.vy >= platform.y
-            && (player.x - 30) > (platform.x - player.width) && (player.x  + 30) < (platform.x + platform.width)) {
-                player.y = platform.y - player.height;
+    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+            platforms[i].vx = -PLAYER_XSPEED;
+        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+            platforms[i].vx = PLAYER_XSPEED;
+        else
+            platforms[i].vx = 0;
+
+        // Checks if on platform or not
+        if (player.y + player.height <= platforms[i].y && 
+            player.y + player.height + player.vy >= platforms[i].y && 
+            (player.x - 30) > (platforms[i].x - player.width) && 
+            (player.x  + 30) < (platforms[i].x + platforms[i].width)) {
+                player.y = platforms[i].y - player.height;
                 player.vy = 0;
                 player.falling = false;
-            }
-    })
+        }
 
-    if (player.y + player.vy <= T_MARGIN){
-        platforms.forEach( platform => platform.vy = -player.vy)
-        clouds.forEach( cloud => cloud.vy = -(player.vy / 10))
-        player.y -= player.vy
-    }
-    else if (player.y + player.vy + player.height >= B_MARGIN){
-        platforms.forEach( platform => platform.vy = -player.vy)
-        clouds.forEach( cloud => cloud.vy = -(player.vy / 10))
-        player.y -= player.vy
-    }
-    else{
-        platforms.forEach( platform => platform.vy = 0);
-        clouds.forEach( cloud => cloud.vy = 0);
+        if (player.y + player.vy <= T_MARGIN)
+            platforms[i].vy = -player.vy;
+        else if (player.y + player.vy + player.height >= B_MARGIN)
+            platforms[i].vy = -player.vy;
+        else
+            platforms[i].vy = 0;
     }
 
-    if (player.y < T_MARGIN) 
-        player.y = T_MARGIN;
-    else if ( player.y + player.height > B_MARGIN)
-        player.y = B_MARGIN - player.height;
+    for(let i=0; i<STARS_PER_GAME; i++){
+        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+            stars[i].vx = -PLAYER_XSPEED;
+        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+            stars[i].vx = PLAYER_XSPEED;
+        else
+            stars[i].vx = 0;
 
-    clouds.forEach( cloud => cloud.update());
-    platforms.forEach( platform => platform.update());
-    stars.forEach( star => star.update());
+        if (player.y + player.vy <= T_MARGIN)
+            stars[i].vy = -player.vy;
+        else if (player.y + player.vy + player.height >= B_MARGIN)
+            stars[i].vy = -player.vy;
+        else
+            stars[i].vy = 0;
+
+        if (starIsClose(player, stars[i]))
+            takeStar(i, stars);
+    }
+
+    if (player.y + player.vy <= T_MARGIN ||
+        player.y + player.vy + player.height >= B_MARGIN) {
+            player.y -= player.vy;
+        }
+
+    // if (player.y < T_MARGIN) 
+    //     player.y = T_MARGIN;
+    // else if ( player.y + player.height > B_MARGIN)
+    //     player.y = B_MARGIN - player.height;
+
+    for(let i=0; i<CLOUDS_PER_GAME; i++){
+        clouds[i].update()
+    }
+    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+        platforms[i].update()
+    }
+    for(let i=0; i<STARS_PER_GAME; i++){
+        stars[i].update()
+    }
     player.update();
 }
 
@@ -442,7 +504,8 @@ function animateGame() {
 // Start, win and lose game functions
 function startGame() {
     removeDialogs();
-    deletePreviousGame()
+    deletePreviousGame();
+    resetStarCounter();
     generateGame();
     startTimer();
     animateGame();
