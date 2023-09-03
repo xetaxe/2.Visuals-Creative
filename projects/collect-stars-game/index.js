@@ -3,7 +3,7 @@
 const GRAVITY = 1.6;
 const MAX_VY = 26;
 const PLAYER_XSPEED = 5;
-const TIME_PER_GAME = 100;
+const TIME_PER_GAME = 120;
 const STARS_PER_GAME = 30;
 const PLATFORMS_PER_GAME = 200;
 const PLATFORM_MIN_WIDTH = 100;
@@ -85,10 +85,12 @@ class Player {
             this.x_limit -= PLAYER_XSPEED;
         if (keys.right.pressed && R_LIMIT > this.x_limit)
             this.x_limit += PLAYER_XSPEED;
-        if (this.falling && this.vy < MAX_VY){
-            this.vy += GRAVITY;
-        }
+
+        
         this.draw();
+
+        if (this.falling && this.vy < MAX_VY)
+            this.vy += GRAVITY;
     }
 
     reset() {
@@ -385,7 +387,6 @@ function generateGame(){
             starPlatform = platforms[starPlatformIndex];
             x = starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10);
             y = starPlatform.y - 100;
-            console.log(x, y)
         } while(stars.filter( star => Math.abs(x - star.x) + Math.abs(y - star.y) < 100).length > 0); // To prevent close stars
         stars.push(new Star(x, y))
     }
@@ -407,20 +408,34 @@ function animateGame() {
 
     player.falling = true;
 
-    if ((keys.right.pressed && player.x < R_MARGIN) || 
-    (keys.right.pressed && (player.x_limit + R_MARGIN) > R_LIMIT && (player.x + player.width) < canvas.width))
+    let approchesRightLimit = (player.x_limit + R_MARGIN) > R_LIMIT;
+    let approchesLeftLimit = (player.x_limit - L_MARGIN) < L_LIMIT;
+
+    if (keys.right.pressed && (player.x < R_MARGIN || approchesRightLimit && (player.x + player.width) < canvas.width))
         player.vx = PLAYER_XSPEED;
-    else if ((keys.left.pressed && player.x > L_MARGIN) || 
-    (keys.left.pressed && (player.x_limit - L_MARGIN) < L_LIMIT && player.x > 0))
+    else if (keys.left.pressed && (player.x > L_MARGIN || approchesLeftLimit && player.x > 0))
         player.vx = -PLAYER_XSPEED;
     else
         player.vx = 0;
 
 
+    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+        // Checks if on platform or not
+        if (player.y + player.height <= platforms[i].y && 
+            player.y + player.height + player.vy >= platforms[i].y && 
+            (player.x - player.width / 2) > (platforms[i].x - player.width) && 
+            (player.x  + player.width / 2) < (platforms[i].x + platforms[i].width)) {
+                player.y = platforms[i].y - player.height;
+                // player.vy = (player.y + player.height) - platforms[i].y;
+                player.vy = 0;
+                player.falling = false;
+        }
+    }
+
     for(let i=0; i<CLOUDS_PER_GAME; i++){
-        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+        if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
             clouds[i].vx = -1;
-        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+        else if (keys.left.pressed && player.x <= L_MARGIN && !approchesLeftLimit)
             clouds[i].vx = 1;
         else
             clouds[i].vx = -0.1;
@@ -431,38 +446,32 @@ function animateGame() {
             clouds[i].vy = -(player.vy / 10);
         else
             clouds[i].vy = 0;
+
+        clouds[i].update()
     }
 
     for(let i=0; i<PLATFORMS_PER_GAME; i++){
-        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+        if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
             platforms[i].vx = -PLAYER_XSPEED;
-        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+        else if (keys.left.pressed && player.x <= L_MARGIN && !approchesLeftLimit)
             platforms[i].vx = PLAYER_XSPEED;
         else
             platforms[i].vx = 0;
 
-        // Checks if on platform or not
-        if (player.y + player.height <= platforms[i].y && 
-            player.y + player.height + player.vy >= platforms[i].y && 
-            (player.x - 30) > (platforms[i].x - player.width) && 
-            (player.x  + 30) < (platforms[i].x + platforms[i].width)) {
-                player.y = platforms[i].y - player.height;
-                player.vy = 0;
-                player.falling = false;
-        }
-
-        if (player.y + player.vy <= T_MARGIN)
+        if (player.y + player.vy < T_MARGIN)
             platforms[i].vy = -player.vy;
         else if (player.y + player.vy + player.height >= B_MARGIN)
             platforms[i].vy = -player.vy;
         else
             platforms[i].vy = 0;
+
+        platforms[i].update()
     }
 
     for(let i=0; i<STARS_PER_GAME; i++){
-        if (keys.right.pressed && player.x >= R_MARGIN && (player.x_limit + R_MARGIN) <= R_LIMIT)
+        if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
             stars[i].vx = -PLAYER_XSPEED;
-        else if (keys.left.pressed && player.x <= L_MARGIN && (player.x_limit - L_MARGIN) >= L_LIMIT)
+        else if (keys.left.pressed && player.x <= L_MARGIN && !approchesLeftLimit)
             stars[i].vx = PLAYER_XSPEED;
         else
             stars[i].vx = 0;
@@ -476,27 +485,29 @@ function animateGame() {
 
         if (starIsClose(player, stars[i]))
             takeStar(i, stars);
+
+        stars[i].update()
     }
 
-    if (player.y + player.vy <= T_MARGIN ||
-        player.y + player.vy + player.height >= B_MARGIN) {
-            player.y -= player.vy;
-        }
+    if (player.y + player.vy < T_MARGIN ||
+    player.y + player.vy + player.height > B_MARGIN) {
+        player.y = Math.min(player.y - player.vy, B_MARGIN);
+    }
 
     // if (player.y < T_MARGIN) 
     //     player.y = T_MARGIN;
     // else if ( player.y + player.height > B_MARGIN)
     //     player.y = B_MARGIN - player.height;
 
-    for(let i=0; i<CLOUDS_PER_GAME; i++){
-        clouds[i].update()
-    }
-    for(let i=0; i<PLATFORMS_PER_GAME; i++){
-        platforms[i].update()
-    }
-    for(let i=0; i<STARS_PER_GAME; i++){
-        stars[i].update()
-    }
+    // for(let i=0; i<CLOUDS_PER_GAME; i++){
+    //     clouds[i].update()
+    // }
+    // for(let i=0; i<PLATFORMS_PER_GAME; i++){
+    //     platforms[i].update()
+    // }
+    // for(let i=0; i<STARS_PER_GAME; i++){
+    //     stars[i].update()
+    // }
     player.update();
 }
 
