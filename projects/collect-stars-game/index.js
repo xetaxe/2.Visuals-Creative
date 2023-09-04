@@ -17,8 +17,8 @@ const T_LIMIT = -2000;
 const B_LIMIT = 1000;
 
 // Minimap dimensions
-const MINIMAP_WIDTH = 200;
-const MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
+let MINIMAP_WIDTH = 300;
+let MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
 
 //Images and canvas
 const platform_grass = document.getElementById("platform_grass");
@@ -31,10 +31,16 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
-if(innerHeight > innerWidth) //In portrait, substract 100px for mobile controls
+let minimapX = canvas.width - 50 - MINIMAP_WIDTH;
+let minimapY = canvas.height - 50 - MINIMAP_HEIGHT;
+if(innerHeight > innerWidth) { //In portrait, substract 100px for mobile controls
     canvas.height -= 100;
-let minimapX = canvas.width - 30 - MINIMAP_WIDTH;
-let minimapY = canvas.height - 40 - MINIMAP_HEIGHT;
+    MINIMAP_WIDTH = 220;
+    MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
+    minimapX = canvas.width - MINIMAP_WIDTH;
+    minimapY = canvas.height - MINIMAP_HEIGHT;
+} 
+
 
 //Normal window of movement for the ball
 let R_MARGIN = canvas.width / 3;
@@ -48,13 +54,20 @@ let B_MARGIN = canvas.height * (8 / 9);
 window.addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-    if(innerHeight > innerWidth)
-        canvas.height -= 100;
-    R_MARGIN = canvas.width / 3;
-    L_MARGIN = canvas.width / 9;
 
+    let MINIMAP_WIDTH = 300;
+    let MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
     minimapX = canvas.width - 50 - MINIMAP_WIDTH;
     minimapY = canvas.height - 50 - MINIMAP_HEIGHT;
+    if(innerHeight > innerWidth) {
+        canvas.height -= 100;
+        MINIMAP_WIDTH = 220;
+        MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
+        minimapX = canvas.width - MINIMAP_WIDTH;
+        minimapY = canvas.height - MINIMAP_HEIGHT;
+    }
+    R_MARGIN = canvas.width / 3;
+    L_MARGIN = canvas.width / 9;
 })
 
 
@@ -409,6 +422,7 @@ function generateGame(){
 }
 
 function deletePreviousGame() {
+    cancelAnimationFrame(animationID);
     player.reset();
     minimapPlatforms.splice(0, minimapPlatforms.length);
     minimapStars.splice(0, minimapStars.length);
@@ -436,6 +450,7 @@ function drawMinimap(){
 
     // Draw initial rectangle
     c.globalAlpha = 0.4;
+    c.fillStyle = "black"
     c.fillRect(minimapX, minimapY, MINIMAP_WIDTH, MINIMAP_HEIGHT);
     c.globalAlpha = 1.0;
 
@@ -455,7 +470,7 @@ function drawMinimap(){
     c.closePath();
 
     // Draw stars
-    c.strokeStyle = "yellow"
+    c.strokeStyle = "yellow";
     c.beginPath();
     for(let i=0; i<minimapStars.length; i++){
 
@@ -469,7 +484,18 @@ function drawMinimap(){
             c.stroke();
         }
     }
-    c.closePath(); 
+    c.closePath();
+
+    // Draw player rectangle
+    let playerSquareX = Math.max(minimapX, Math.min(minimapX + (((player.x_limit - L_MARGIN) - L_LIMIT) / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH, minimapX + MINIMAP_WIDTH - (canvas.width / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH));
+    let playerSquareWidth = (canvas.width / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH
+    c.strokeStyle = "green";
+
+    c.globalAlpha = 0.2;
+    c.fillStyle = "white"
+    c.fillRect(playerSquareX, minimapY, playerSquareWidth, MINIMAP_HEIGHT);
+    c.globalAlpha = 1.0;
+
 }
 
 
@@ -481,7 +507,7 @@ function animateGame() {
 
     player.falling = true;
 
-    let approchesRightLimit = (player.x_limit + R_MARGIN) > R_LIMIT;
+    let approchesRightLimit = (player.x_limit + player.width + R_MARGIN) > R_LIMIT;
     let approchesLeftLimit = (player.x_limit - L_MARGIN) < L_LIMIT;
 
     if (keys.right.pressed && (player.x < R_MARGIN || approchesRightLimit && (player.x + player.width) < canvas.width))
