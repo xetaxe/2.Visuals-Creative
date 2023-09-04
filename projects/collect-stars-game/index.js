@@ -384,7 +384,7 @@ function takeStar(starIndex, starArray){
 // Fundamental game variables
 const player = new Player();
 const platforms = [];
-const clouds = [];
+// const clouds = [];
 const stars = [];
 
 const minimapPlatforms = [];
@@ -398,18 +398,18 @@ function generateGame(){
     for(let i=1; i<PLATFORMS_PER_GAME; i++){
         let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
         let y = Math.floor(1 + Math.floor(Math.random() * (B_LIMIT - (T_LIMIT + 200)) + T_LIMIT) / 200) * 200;
-        let w = Math.floor(Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH) + PLATFORM_MIN_WIDTH);
+        let w = Math.min(Math.floor(Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH) + PLATFORM_MIN_WIDTH), R_LIMIT - x);
         platforms.push(new Platform(x, y, w))
         minimapPlatforms.push(platformMinimapCoordinates(x, y, w));
     }
 
-    for(let i=0; i<CLOUDS_PER_GAME; i++){
-        let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
-        let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
-        let w = Math.floor(Math.random() * (300 - 100) + 100);
-        let h = Math.floor(Math.random() * (300 - 100) + 100);
-        clouds.push(new Cloud(x, y, w, h))
-    }
+    // for(let i=0; i<CLOUDS_PER_GAME; i++){
+    //     let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
+    //     let y = Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT);
+    //     let w = Math.floor(Math.random() * (300 - 100) + 100);
+    //     let h = Math.floor(Math.random() * (300 - 100) + 100);
+    //     clouds.push(new Cloud(x, y, w, h))
+    // }
 
     for(let i=0; i<STARS_PER_GAME; i++){
         let starPlatformIndex, starPlatform, x, y;
@@ -430,7 +430,7 @@ function deletePreviousGame() {
     minimapPlatforms.splice(0, minimapPlatforms.length);
     minimapStars.splice(0, minimapStars.length);
     platforms.splice(0, platforms.length);
-    clouds.splice(0, clouds.length);
+    // clouds.splice(0, clouds.length);
     stars.splice(0, stars.length);
 }
 
@@ -461,10 +461,10 @@ function drawMinimap(){
     c.lineWidth = 2;
     c.strokeStyle = "#0e5526"
     c.beginPath();
-    for(let i=0; i<minimapPlatforms.length; i++){
-        let platformX = Math.max(minimapX, minimapX + minimapPlatforms[i][0])
+    for(let i=0; i<PLATFORMS_PER_GAME; i++){
+        let platformX = minimapX + minimapPlatforms[i][0];
         let platformY = minimapY + minimapPlatforms[i][1];
-        let platformEnd =  Math.min(minimapX + MINIMAP_WIDTH, minimapX + minimapPlatforms[i][2]);
+        let platformEnd =  minimapX + minimapPlatforms[i][2];
 
         c.moveTo(platformX, platformY);
         c.lineTo(platformEnd, platformY);
@@ -475,7 +475,7 @@ function drawMinimap(){
     // Draw stars
     c.strokeStyle = "yellow";
     c.beginPath();
-    for(let i=0; i<minimapStars.length; i++){
+    for(let i=0; i<STARS_PER_GAME; i++){
 
         let starX = minimapX + minimapStars[i][0];
         let starY = minimapY + minimapStars[i][1];
@@ -528,29 +528,28 @@ function animateGame() {
             (player.x - player.width / 2) > (platforms[i].x - player.width) && 
             (player.x  + player.width / 2) < (platforms[i].x + platforms[i].width)) {
                 player.y = platforms[i].y - player.height;
-                // player.vy = (player.y + player.height) - platforms[i].y;
                 player.vy = 0;
                 player.falling = false;
         }
     }
 
-    for(let i=0; i<CLOUDS_PER_GAME; i++){
-        if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
-            clouds[i].vx = -1;
-        else if (keys.left.pressed && player.x <= L_MARGIN && !approchesLeftLimit)
-            clouds[i].vx = 1;
-        else
-            clouds[i].vx = -0.1;
+    // for(let i=0; i<CLOUDS_PER_GAME; i++){
+    //     if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
+    //         clouds[i].vx = -1;
+    //     else if (keys.left.pressed && player.x <= L_MARGIN && !approchesLeftLimit)
+    //         clouds[i].vx = 1;
+    //     else
+    //         clouds[i].vx = -0.1;
 
-        if (player.y + player.vy <= T_MARGIN)
-            clouds[i].vy = -(player.vy / 10);
-        else if (player.y + player.vy + player.height >= B_MARGIN)
-            clouds[i].vy = -(player.vy / 10);
-        else
-            clouds[i].vy = 0;
+    //     if (player.y + player.vy <= T_MARGIN)
+    //         clouds[i].vy = -(player.vy / 10);
+    //     else if (player.y + player.vy + player.height >= B_MARGIN)
+    //         clouds[i].vy = -(player.vy / 10);
+    //     else
+    //         clouds[i].vy = 0;
 
-        clouds[i].update()
-    }
+    //     clouds[i].update()
+    // }
 
     for(let i=0; i<PLATFORMS_PER_GAME; i++){
         if (keys.right.pressed && player.x >= R_MARGIN && !approchesRightLimit)
@@ -597,7 +596,7 @@ function animateGame() {
     }
 
     player.update();
-    // drawMinimap();
+    drawMinimap();
 }
 
 
