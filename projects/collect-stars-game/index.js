@@ -597,7 +597,7 @@ function animateGame() {
     }
 
     player.update();
-    drawMinimap();
+    // drawMinimap();
 }
 
 
