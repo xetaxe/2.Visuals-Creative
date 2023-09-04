@@ -185,6 +185,19 @@ a {
     display: none !important;
 }
 
+#display_minimap {
+    z-index: 10;
+    aspect-ratio: 1 / 1;
+    position: fixed;
+    bottom: 120px;
+    right: 20px;
+    border-radius: 100vh;
+    color: #5ABA4A;
+    background-color: #0e5526;
+    padding: 5px;
+    display: none;
+}
+
 #mobile_controls {
     position: fixed;
     bottom: 0;
@@ -199,6 +212,10 @@ a {
 
 @media (orientation: portrait) {
     #mobile_controls {
+        display: flex;
+        align-items: center;
+    }
+    #display_minimap {
         display: flex;
         align-items: center;
     }

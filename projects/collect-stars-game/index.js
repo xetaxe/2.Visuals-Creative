@@ -19,6 +19,7 @@ const B_LIMIT = 1000;
 // Minimap dimensions
 let MINIMAP_WIDTH = 300;
 let MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
+let displayMinimap = true;
 
 //Images and canvas
 const platform_grass = document.getElementById("platform_grass");
@@ -35,6 +36,7 @@ let minimapX = canvas.width - 50 - MINIMAP_WIDTH;
 let minimapY = canvas.height - 50 - MINIMAP_HEIGHT;
 if(innerHeight > innerWidth) { //In portrait, substract 100px for mobile controls
     canvas.height -= 100;
+    displayMinimap = false;
     MINIMAP_WIDTH = 220;
     MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
     minimapX = canvas.width - MINIMAP_WIDTH;
@@ -55,16 +57,20 @@ window.addEventListener("resize", () => {
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 
+    displayMinimap = true;
     let MINIMAP_WIDTH = 300;
     let MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
     minimapX = canvas.width - 50 - MINIMAP_WIDTH;
     minimapY = canvas.height - 50 - MINIMAP_HEIGHT;
+    document.getElementById("display_minimap").classList.add("hide");
     if(innerHeight > innerWidth) {
         canvas.height -= 100;
+        displayMinimap = false;
         MINIMAP_WIDTH = 220;
         MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
         minimapX = canvas.width - MINIMAP_WIDTH;
         minimapY = canvas.height - 20 - MINIMAP_HEIGHT;
+        document.getElementById("display_minimap").classList.remove("hide");
     }
     R_MARGIN = canvas.width / 3;
     L_MARGIN = canvas.width / 9;
@@ -222,6 +228,19 @@ document.getElementById("try_again").addEventListener('click', () => {
 
 document.getElementById("play_again").addEventListener('click', () => {
     startGame();
+})
+
+// Display minimap button
+document.getElementById("display_minimap").addEventListener('click', () => {
+    if (!displayMinimap) {
+        displayMinimap = true;
+        document.getElementById("display_minimap").style.opacity = "0";
+        document.getElementById("display_minimap").style.padding = "30px 50px";
+    } else {
+        displayMinimap = false;
+        document.getElementById("display_minimap").style.opacity = "1";
+        document.getElementById("display_minimap").style.padding = "5px";
+    }
 })
 
 function displayTime(time) {
@@ -596,7 +615,8 @@ function animateGame() {
     }
 
     player.update();
-    drawMinimap();
+    if (displayMinimap)
+        drawMinimap();
 }
 
 
