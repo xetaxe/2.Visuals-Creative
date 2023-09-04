@@ -3,18 +3,22 @@
 const GRAVITY = 1.6;
 const MAX_VY = 26;
 const PLAYER_XSPEED = 5;
-const TIME_PER_GAME = 120;
+const TIME_PER_GAME = 150;
 const STARS_PER_GAME = 30;
 const PLATFORMS_PER_GAME = 200;
 const PLATFORM_MIN_WIDTH = 100;
 const PLATFORM_MAX_WIDTH = 600;
-const CLOUDS_PER_GAME = 200;
+const CLOUDS_PER_GAME = 260;
 
 // Level dimensions
 const R_LIMIT = 3000;
 const L_LIMIT = -3000;
 const T_LIMIT = -2000;
 const B_LIMIT = 1000;
+
+// Minimap dimensions
+const MINIMAP_WIDTH = 200;
+const MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
 
 //Images and canvas
 const platform_grass = document.getElementById("platform_grass");
@@ -29,6 +33,8 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 if(innerHeight > innerWidth) //In portrait, substract 100px for mobile controls
     canvas.height -= 100;
+let minimapX = canvas.width - 30 - MINIMAP_WIDTH;
+let minimapY = canvas.height - 40 - MINIMAP_HEIGHT;
 
 //Normal window of movement for the ball
 let R_MARGIN = canvas.width / 3;
@@ -46,6 +52,9 @@ window.addEventListener("resize", () => {
         canvas.height -= 100;
     R_MARGIN = canvas.width / 3;
     L_MARGIN = canvas.width / 9;
+
+    minimapX = canvas.width - 50 - MINIMAP_WIDTH;
+    minimapY = canvas.height - 50 - MINIMAP_HEIGHT;
 })
 
 
@@ -346,6 +355,7 @@ function takeStar(starIndex, starArray){
     if(!starArray[starIndex].taken) {
 
         starArray[starIndex].taken = true;
+        minimapStars[starIndex][2] = true;
         currentStars++;
         displayStars(currentStars);
     }
@@ -361,15 +371,20 @@ const platforms = [];
 const clouds = [];
 const stars = [];
 
+const minimapPlatforms = [];
+const minimapStars = []
+
 function generateGame(){
     let basePlatform = new Platform(L_LIMIT - 500, B_LIMIT, (R_LIMIT - L_LIMIT) + 2000);
     platforms.push(basePlatform);
+    minimapPlatforms.push([basePlatform.x, basePlatform.y, basePlatform.width])
 
     for(let i=1; i<PLATFORMS_PER_GAME; i++){
         let x = Math.floor(Math.random() * (R_LIMIT - L_LIMIT) + L_LIMIT);
-        let y = Math.floor(Math.floor(Math.random() * (B_LIMIT - T_LIMIT) + T_LIMIT) / 200) * 200;
+        let y = Math.floor(1 + Math.floor(Math.random() * (B_LIMIT - (T_LIMIT + 200)) + T_LIMIT) / 200) * 200;
         let w = Math.floor(Math.random() * (PLATFORM_MAX_WIDTH - PLATFORM_MIN_WIDTH) + PLATFORM_MIN_WIDTH);
         platforms.push(new Platform(x, y, w))
+        minimapPlatforms.push(platformMinimapCoordinates(x, y, w));
     }
 
     for(let i=0; i<CLOUDS_PER_GAME; i++){
@@ -385,18 +400,76 @@ function generateGame(){
         do {
             starPlatformIndex = Math.floor(Math.random() * PLATFORMS_PER_GAME)
             starPlatform = platforms[starPlatformIndex];
-            x = starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10);
+            x = Math.min(starPlatform.x + Math.floor(Math.random() * (starPlatform.width + 20) - 10), R_LIMIT);
             y = starPlatform.y - 100;
         } while(stars.filter( star => Math.abs(x - star.x) + Math.abs(y - star.y) < 100).length > 0); // To prevent close stars
         stars.push(new Star(x, y))
+        minimapStars.push(starMinimapCoordinates(x, y, false));
     }
 }
 
 function deletePreviousGame() {
     player.reset();
+    minimapPlatforms.splice(0, minimapPlatforms.length);
+    minimapStars.splice(0, minimapStars.length);
     platforms.splice(0, platforms.length);
     clouds.splice(0, clouds.length);
     stars.splice(0, stars.length);
+}
+
+function platformMinimapCoordinates(x, y, w) {
+    let platformX = ((x - L_LIMIT) / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH;
+    let platformEnd = ((x + w - L_LIMIT) / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH;
+    let platformY = ((y - T_LIMIT) / (B_LIMIT - T_LIMIT)) * MINIMAP_HEIGHT;
+
+    return [platformX, platformY, platformEnd]
+}
+
+function starMinimapCoordinates(x, y, taken) {
+    let starX = ((x - L_LIMIT) / (R_LIMIT - L_LIMIT)) * MINIMAP_WIDTH;
+    let starY = ((y - T_LIMIT) / (B_LIMIT - T_LIMIT)) * MINIMAP_HEIGHT;
+
+    return [starX, starY, taken]
+}
+
+function drawMinimap(){
+
+    // Draw initial rectangle
+    c.globalAlpha = 0.4;
+    c.fillRect(minimapX, minimapY, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+    c.globalAlpha = 1.0;
+
+    // Draw platforms
+    c.lineWidth = 2;
+    c.strokeStyle = "#0e5526"
+    c.beginPath();
+    for(let i=0; i<minimapPlatforms.length; i++){
+        let platformX = Math.max(minimapX, minimapX + minimapPlatforms[i][0])
+        let platformY = minimapY + minimapPlatforms[i][1];
+        let platformEnd =  Math.min(minimapX + MINIMAP_WIDTH, minimapX + minimapPlatforms[i][2]);
+
+        c.moveTo(platformX, platformY);
+        c.lineTo(platformEnd, platformY);
+        c.stroke();
+    }
+    c.closePath();
+
+    // Draw stars
+    c.strokeStyle = "yellow"
+    c.beginPath();
+    for(let i=0; i<minimapStars.length; i++){
+
+        let starX = minimapX + minimapStars[i][0];
+        let starY = minimapY + minimapStars[i][1];
+        let starTaken = minimapStars[i][2];
+
+        if(!starTaken){
+            c.moveTo(starX, starY);
+            c.lineTo(starX + 1, starY);
+            c.stroke();
+        }
+    }
+    c.closePath(); 
 }
 
 
@@ -494,21 +567,8 @@ function animateGame() {
         player.y = Math.min(player.y - player.vy, B_MARGIN);
     }
 
-    // if (player.y < T_MARGIN) 
-    //     player.y = T_MARGIN;
-    // else if ( player.y + player.height > B_MARGIN)
-    //     player.y = B_MARGIN - player.height;
-
-    // for(let i=0; i<CLOUDS_PER_GAME; i++){
-    //     clouds[i].update()
-    // }
-    // for(let i=0; i<PLATFORMS_PER_GAME; i++){
-    //     platforms[i].update()
-    // }
-    // for(let i=0; i<STARS_PER_GAME; i++){
-    //     stars[i].update()
-    // }
     player.update();
+    drawMinimap();
 }
 
 
