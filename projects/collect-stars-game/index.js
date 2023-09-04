@@ -38,7 +38,7 @@ if(innerHeight > innerWidth) { //In portrait, substract 100px for mobile control
     MINIMAP_WIDTH = 220;
     MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
     minimapX = canvas.width - MINIMAP_WIDTH;
-    minimapY = canvas.height - MINIMAP_HEIGHT;
+    minimapY = canvas.height - 20 - MINIMAP_HEIGHT;
 } 
 
 
@@ -64,7 +64,7 @@ window.addEventListener("resize", () => {
         MINIMAP_WIDTH = 220;
         MINIMAP_HEIGHT = (MINIMAP_WIDTH * (B_LIMIT - T_LIMIT)) / (R_LIMIT - L_LIMIT);
         minimapX = canvas.width - MINIMAP_WIDTH;
-        minimapY = canvas.height - MINIMAP_HEIGHT;
+        minimapY = canvas.height - 20 - MINIMAP_HEIGHT;
     }
     R_MARGIN = canvas.width / 3;
     L_MARGIN = canvas.width / 9;
@@ -144,7 +144,8 @@ class Platform {
     update() {
         this.y += this.vy;
         this.x += this.vx;
-        this.draw();
+        if (Math.abs(player.x - this.x) < canvas.width || Math.abs(player.y - this.y) < canvas.height)
+            this.draw();
     }
 }
 
@@ -166,7 +167,8 @@ class Cloud {
     update() {
         this.y += this.vy;
         this.x += this.vx;
-        this.draw();
+        if (Math.abs(player.x - this.x) < canvas.width || Math.abs(player.y - this.y) < canvas.height)
+            this.draw();
     }
 }
 
@@ -190,7 +192,8 @@ class Star {
     update() {
         this.y += this.vy;
         this.x += this.vx;
-        this.draw();
+        if (Math.abs(player.x - this.x) < canvas.width || Math.abs(player.y - this.y) < canvas.height)
+            this.draw();
     }
 }
 
