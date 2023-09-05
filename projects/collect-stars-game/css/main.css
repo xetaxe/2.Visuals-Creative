@@ -187,11 +187,7 @@ a {
 }
 
 #display_minimap {
-<<<<<<< HEAD
     z-index: 1;
-=======
-    z-index: 10;
->>>>>>> 6232cc2f572c8b34d09f5afbcaa969b475301780
     aspect-ratio: 1 / 1;
     position: fixed;
     bottom: 120px;
